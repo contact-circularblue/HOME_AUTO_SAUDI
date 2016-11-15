@@ -1,6 +1,6 @@
 void interruptFunction_1()
 {
-  interruptCount++;
+  //interruptCount++;
   flag_1=!flag_1;  
   EEPROM.update(1,flag_1);
   Serial.println(flag_1);
