@@ -11,7 +11,7 @@ boolean connectWifi() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    if (i > 10) {
+    if (i > 30) {
       state = false;
       break;
     }
@@ -24,12 +24,13 @@ boolean connectWifi() {
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
-    WiFi.config(ip, gateway, subnet);
-    Serial.print("working");
+    // WiFi.config(ip, gateway, subnet);
+    //Serial.print("working");
 
-    Serial.println("");
-    Serial.print("WiFi connected, using IP address: ");
-    Serial.println(WiFi.localIP());
+    // Serial.println("");
+    // Serial.print("WiFi connected, using IP address: ");
+    // Serial.println(WiFi.localIP());
+
   }
   else {
     Serial.println("");
