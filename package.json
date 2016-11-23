@@ -1,5 +1,5 @@
 {
-  "name": "home_automation",
+  "name": "HomeAutomtion_",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,8 @@
     "express": "^4.10.2",
     "socket.io": "^1.5.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "flightplan": "^0.6.14"
+  },
   "description": ""
 }
