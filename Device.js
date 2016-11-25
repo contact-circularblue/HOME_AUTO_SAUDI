@@ -1,11 +1,19 @@
 
 var DeviceState = {On:"On",Off:"off"};
 
-module.exports = function Device(name){
+var DeviceType = {};
+
+DeviceType['Default']  = "Default";
+DeviceType['IR']  = "IR";
+
+exports.DeviceType = DeviceType;
+
+module.exports = function Device(name,type){
 	// var curentState_;
 	// var name_;
 	this.curentState_ = DeviceState.off;
 	this.name_ = name;
+	this.type_ = type;
 	// this.setName(name);
 	// // this.property1 = 5;
 	// this.property2 = "World";
@@ -34,4 +42,8 @@ module.exports = function Device(name){
 	this.setCurrentState = function(state){
 		curentState_ = state;
 	}; 
+
+	this.type = function(){
+		return this.type_;
+	};
 };

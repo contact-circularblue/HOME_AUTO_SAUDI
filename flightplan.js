@@ -2,7 +2,7 @@ var plan = require('flightplan');
 
 var appName = 'HomeAutomtion_';
 var username = 'deploy';
-var startFile = 'index';
+var startFile = 'index.js';
 
 var tmpDir = appName+'-' + new Date().getTime();
 
@@ -19,8 +19,8 @@ plan.target('production', [
   {
     host: '104.131.44.88',
     username: username,
-    agent: process.env.SSH_AUTH_SOCK
     privateKey: '/Users/rajivaneja/.ssh/id_rsa',
+    agent: process.env.SSH_AUTH_SOCK
   },
 //add in another server if you have more than one
 // {

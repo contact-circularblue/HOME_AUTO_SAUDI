@@ -205,6 +205,26 @@ io.on('connection', function(socket){
         }
    });
 
+   socket.on(Events.On.addIRDevice,function(data){
+
+        console.log("ADD IR DEVICE");
+        console.log(data);
+        switch(socket.DeviceType){
+          case DeviceType.Mobile:
+            console.log("Mobile : " + data);
+              var response_obj = {};
+              response_obj['success'] = "true";
+              response_obj['nId'] = data.nodeId;
+
+              socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
+          break;
+          case DeviceType.Hub:
+            console.log("Hub : " + data);
+            socket.Hub.broadCastToMobieDevices(data,Events.Emit.addIRDevice);
+          break;
+        }
+   });
+
 
 
   socket.on(Events.On.dummy,function(data){

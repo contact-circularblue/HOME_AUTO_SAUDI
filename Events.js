@@ -14,6 +14,7 @@
  On['addDevice']		= "addDevice";
  On['findHub']			= "findHub";
  On['dummy']            = "dummy";
+ On['addIRDevice']      = "addIRDevice";
 
 
 var Emit = {};
@@ -25,11 +26,8 @@ var Emit = {};
  Emit['fan'] 		  = "fan";
  Emit['dummy']        = "dummy";
  Emit['Node_change']  = "Node_change";
+ Emit['addIRDevice']  = "addIRDevice";
 
-
- 
-
- 
  exports.On   = On;
  exports.Emit = Emit;
 

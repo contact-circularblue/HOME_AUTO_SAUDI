@@ -11,7 +11,7 @@ module.exports = function Node(name,type) {
 
 	this.addDevices = function(number){
 		for (var i = 1; i<=number ; i++) {
-			this.addDevice(new Device("Device " + i) );
+			this.addDevice(new Device("Device " + i,Device.DeviceType.Default) );
 			console.log("Device Added : " + "Device " + i);
 		}
 	};
