@@ -30,9 +30,9 @@ Serial.println(password);
 for(int i=0;i<=data1_val.length();i++)
 password[i]=data1_val[i];
 
-      while (!connect_wifi());
+      while (!connect_wifi(ssid, password));
       //while (!connect_to_server());
-      if(connect_wifi())
+      if(WiFi.status() == WL_CONNECTED)
       {
       Serial.println("wifi connected");
 

@@ -56,12 +56,31 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 // constants won't change :
 const long interval = 2000;           // interval at which to send dummy packet
 
+bool connect_wifi(char* ssid1, char* password1);
+void ARD_JSON(String a);
+void add_hub();
+bool monitor_client();
+bool connect_socket();
+bool connect_to_server();
+void process();
+void send_to_server(String in);
+
+
+
 void setup() {
   Serial.begin(9600);
   delay(10);
 
   // We start by connecting to a WiFi network
-  while (!connect_wifi());
+  while (!connect_wifi(ssid, password));
+
+//  while (1)
+//  {
+//    connect_wifi(ssid, password);
+//    delay(1000);
+//  }
+  
+  
 
   while (!connect_to_server());
 
