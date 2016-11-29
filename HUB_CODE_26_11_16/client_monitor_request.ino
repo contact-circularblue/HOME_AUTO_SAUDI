@@ -3,8 +3,8 @@ bool monitor_client()
  if (client.monitor())
   {
 
-Serial.print("Full message=");
-Serial.println(rcvd_msg_full);
+//Serial.print("Full message=");
+//Serial.println(rcvd_msg_full);
 
     //    Serial.println("MONITOR");
     //    lastreply = millis();

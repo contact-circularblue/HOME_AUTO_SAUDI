@@ -1,10 +1,10 @@
 /*
- *  This sketch sends data via HTTP GET requests to data.sparkfun.com service.
- *
- *  You need to get streamId and privateKey at data.sparkfun.com and paste them
- *  below. Or just customize this script to talk to other HTTP servers.
- *
- */
+    This sketch sends data via HTTP GET requests to data.sparkfun.com service.
+
+    You need to get streamId and privateKey at data.sparkfun.com and paste them
+    below. Or just customize this script to talk to other HTTP servers.
+
+*/
 #include <ESP8266WiFi.h>
 #include <SocketIOClient.h>
 #include <ArduinoJson.h>
@@ -39,9 +39,9 @@ String message_val = "";
 String success_val = "";
 String data0_val = "";
 String data1_val = "";
-String nodeId= "";
-String deviceId= "";
-String deviceState= "";
+String nodeId = "";
+String deviceId = "";
+String deviceState = "";
 
 bool hub_connected = false;
 
@@ -56,31 +56,14 @@ unsigned long previousMillis = 0;        // will store last time LED was updated
 // constants won't change :
 const long interval = 2000;           // interval at which to send dummy packet
 
-bool connect_wifi(char* ssid1, char* password1);
-void ARD_JSON(String a);
-void add_hub();
-bool monitor_client();
-bool connect_socket();
-bool connect_to_server();
-void process();
-void send_to_server(String in);
-
-
-
 void setup() {
   Serial.begin(9600);
   delay(10);
 
   // We start by connecting to a WiFi network
-  while (!connect_wifi(ssid, password));
+  while (!connect_wifi());
 
-//  while (1)
-//  {
-//    connect_wifi(ssid, password);
-//    delay(1000);
-//  }
-  
-  
+ 
 
   while (!connect_to_server());
 
@@ -91,16 +74,16 @@ void setup() {
 
   delay(100);
   monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
-  
 
-add_hub();
-//Serial.println("hum yahaan hain!");
+
+  add_hub();
+  //Serial.println("hum yahaan hain!");
 
 }
 
 void loop()
 {
-  
+
   //client.send("wifi", "message", "success");
   delay(10);
 
@@ -108,44 +91,44 @@ void loop()
   {
     process();
   }
-  
-  if(Serial.available())
+
+  if (Serial.available())
   {
     delay(50);
-    if(Serial.find("jackhammer,"))
+    if (Serial.find("jackhammer,"))
     {
-      String from_node="";
-    while(Serial.available())
-    {
-    from_node+=(char(Serial.read()));
-    delay(10);
-    }
-    send_to_server(from_node);
+      String from_node = "";
+      while (Serial.available())
+      {
+        from_node += (char(Serial.read()));
+        delay(10);
+      }
+      send_to_server(from_node);
     }
   }
 
 
-  
-  
-unsigned long currentMillis = millis();
- 
-if(currentMillis - previousMillis >= interval) {
-previousMillis = currentMillis;
 
-client.send("dummy", "message", "1");
 
-////when there is any change at the node
-//JsonObject& root = jsonBuffer.createObject();
-//  root["nodeId"] = "4234567890";
-//  root["deviceId"] = 1;
-//  root["deviceState"] = 0;
-//  String json = "";
-//  root.printTo(json);
-//
-//client.sendJSON("Node_change", json);
-  
-}
-//delay(100);
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+
+    client.send("dummy", "message", "1");
+
+    ////when there is any change at the node
+    //JsonObject& root = jsonBuffer.createObject();
+    //  root["nodeId"] = "4234567890";
+    //  root["deviceId"] = 1;
+    //  root["deviceState"] = 0;
+    //  String json = "";
+    //  root.printTo(json);
+    //
+    //client.sendJSON("Node_change", json);
+
+  }
+  //delay(100);
 }
 
 

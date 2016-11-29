@@ -1,12 +1,11 @@
-bool connect_wifi(char* ssid1, char* password1)
+bool connect_wifi()//String ssid, String password)
 {
   bool state = true;
   int i=0;
-  Serial.println(ssid1);
-  Serial.println(password1);
-//  WiFi.disconnect();
-//  delay(1000);
-  WiFi.begin(ssid1,password1);
+  Serial.println(ssid);
+  Serial.println(password);
+  
+  WiFi.begin(ssid,password);
   
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
