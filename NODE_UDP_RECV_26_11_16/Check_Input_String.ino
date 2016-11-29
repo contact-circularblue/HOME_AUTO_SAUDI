@@ -1,19 +1,29 @@
 void Check_Input_String(String Check_Name)
 {
-  //Serial.print("Check_Name:");
-  //Serial.println(Check_Name);   // Check_Name contains the contents of the packet
+  //  Serial.print("Check_Name:");
+  //  Serial.println(Check_Name);   // Check_Name contains the contents of the packet
 
   if (Check_Name.substring(0, 10) == "jackhammer")
   {
     //Serial.println("I got it");
     //Serial.println(Check_Name.substring(11, 14));
-    Parse_State = Check_Name.substring(11, 14);
-    //Serial.print("Parse_State is :");
-    //Serial.println(Check_Name.substring(11, 14));
+    Parse_State = Check_Name.substring(11, 16);
+    //    Serial.print("Parse_State is :");
+    //    //Serial.println(Check_Name.substring(11, 14));
+    Serial.println(Parse_State);
 
-    if (Parse_State.charAt(0) >= 49 && Parse_State.charAt(0) <= 52)
+    //if (Parse_State.charAt(0) >= 49 && Parse_State.charAt(0) <= 52)
+    if (Parse_State.charAt(0) == '0')// || Parse_State.charAt(0) == '1' || Parse_State.charAt(0) == '2')
     {
-      if (Parse_State.charAt(2) == 48 || Parse_State.charAt(2) == 49)
+      String device_ID_t = Parse_State.substring(Parse_State.indexOf(",") + 1);
+      //Serial.println("device_ID_t= " + device_ID_t);
+      String device_ID = device_ID_t.substring(0, device_ID_t.indexOf(","));
+      //Serial.println("device_ID= " + device_ID);
+
+      int device_ID_int = device_ID.toInt();
+//      Serial.print("integer=");
+//      Serial.println(device_ID_int);
+      if (device_ID_int>=0 && device_ID_int<=21)
       {
         Serial.print(Parse_State);
         //Serial.print("the node IP is: ");
@@ -79,7 +89,7 @@ void Check_Input_String(String Check_Name)
         //        IPAddress IP_hub(Octet_1.toInt(), Octet_2.toInt(), Octet_3.toInt(), 200);
 
         IPAddress IP_hub2(Octet_1.toInt(), Octet_2.toInt(), Octet_3.toInt(), 200);
-        IP_hub=IP_hub2;
+        IP_hub = IP_hub2;
 
         //        Serial.print("ip of hub is: ");
 
@@ -95,6 +105,11 @@ void Check_Input_String(String Check_Name)
         UDP.write(ReplyBuffer);
         UDP.endPacket();
       }
+    }
+
+    else if (Parse_State.charAt(0) == '1')
+    {
+      Serial.print("1,0,0");
     }
   }
 

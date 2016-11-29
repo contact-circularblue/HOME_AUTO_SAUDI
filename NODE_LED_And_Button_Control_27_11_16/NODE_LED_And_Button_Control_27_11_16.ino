@@ -126,8 +126,8 @@ void loop() {
     //////////////////Serial.print("data received="+data);
     //////////////////Serial.println();
 
-    node_switch = data.charAt(0);
-    state = data.charAt(2);
+    node_switch = data.charAt(2);
+    state = data.charAt(4);
 
     //  Serial.println(node_switch);
     //  Serial.println(state);
