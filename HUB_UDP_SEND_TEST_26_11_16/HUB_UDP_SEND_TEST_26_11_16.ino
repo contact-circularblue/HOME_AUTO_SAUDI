@@ -2,14 +2,12 @@
 #include <WiFiUDP.h>
 
 // wifi connection variables
-const char* ssid = "Circular Blue";
-const char* password = "mightycartoon";
+char* ssid = "Circular Blue";
+char* password = "mightycartoon";
 boolean wifiConnected = false;
 int counter = 1;
 
-IPAddress ip(192, 168, 1, 200); //Node static IP
-IPAddress gateway(192, 168, 1, 1);
-IPAddress subnet(255, 255, 255, 0);
+
 
 // UDP variables
 unsigned int localPort = 80;
@@ -23,6 +21,8 @@ void setup() {
   // Initialise Serial connection
   Serial.begin(9600);
 
+  ESP.eraseConfig();
+  
   // Initialise wifi connection
   while (!connectWifi())
     delay(100);
@@ -35,7 +35,7 @@ void setup() {
   udpConnected = connectUDP();
   if (udpConnected) {
     // initialise pins
-    //Serial.println("UDP connected");
+    Serial.println("UDP connected");
 
     
 
@@ -47,6 +47,7 @@ void setup() {
 }
 
 void loop() {
+  
   //Serial.println("Entering loop");
   // check if the WiFi and UDP connections were successful
   //Serial.begin(9600);
@@ -85,9 +86,15 @@ void loop() {
           UDP.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
           //Serial.println("Contents:");
           //int value = packetBuffer[0]*256 + packetBuffer[1];
+          String data_in="";
           for (int i = 0; i < packetSize; i++)
-            Serial.print(char(packetBuffer[i]));
+          data_in+=char(packetBuffer[i]);
+          if(data_in.indexOf("hub:")!=-1)
+          {
+            String data_out=data_in.substring(data_in.indexOf(":")+1);
+            Serial.print(data_out);
           Serial.println();
+          }
 
         }
 

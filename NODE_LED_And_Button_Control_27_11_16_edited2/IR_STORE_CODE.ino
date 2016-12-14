@@ -1,6 +1,6 @@
 // Stores the code for later playback
 // Most of this code is just logging
-void storeCode(decode_results *results) {
+void storeCode(decode_results *results, int pos_list) {
 
   //Serial.println("STORING-----");
   codeType = results->decode_type;
@@ -39,7 +39,7 @@ void storeCode(decode_results *results) {
     Serial.println("code length is: ");
     Serial.println(codeLen);
 
-    Code_byte_Seperate();
+    Code_byte_Seperate(pos_list);
     
       if (results->value == REPEAT) {
         
@@ -58,7 +58,7 @@ void storeCode(decode_results *results) {
     Serial.println("code length is: ");
     Serial.println(codeLen);
 
-    Code_byte_Seperate();
+    Code_byte_Seperate(pos_list);
     
     }
     else if (codeType == RC5) {
@@ -71,7 +71,7 @@ void storeCode(decode_results *results) {
     Serial.println("code length is: ");
     Serial.println(codeLen);
 
-    Code_byte_Seperate();
+    Code_byte_Seperate(pos_list);
     
     }
     else if (codeType == RC6) {
@@ -84,7 +84,7 @@ void storeCode(decode_results *results) {
 //    Serial.println("code length is: ");
 //    Serial.println(codeLen);
 
-    Code_byte_Seperate();
+    Code_byte_Seperate(pos_list);
     
     }
    /* else {

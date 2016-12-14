@@ -30,26 +30,26 @@ void process()
       for (int i = 0; i <= data1_val.length(); i++)
         password[i] = data1_val[i];
 
-//      WiFi.disconnect();
-//      delay(1000);
-//
-//      while (WiFi.status() == WL_CONNECTED);
-//      Serial.println("DISCONNECTED");
-//
-//      delay(3000);
-//
-//
-//
-//      while (!connect_wifi());
-      
+      //      WiFi.disconnect();
+      //      delay(1000);
+      //
+      //      while (WiFi.status() == WL_CONNECTED);
+      //      Serial.println("DISCONNECTED");
+      //
+      //      delay(3000);
+      //
+      //
+      //
+      //      while (!connect_wifi());
+
       if (WiFi.status() == WL_CONNECTED)
       {
-//        Serial.println("wifi connected");
-//
-//        while (!connect_to_server());
-//
-//
-//        while (!connect_socket());
+        //        Serial.println("wifi connected");
+        //
+        //        while (!connect_to_server());
+        //
+        //
+        //        while (!connect_socket());
 
         delay(100);
         //monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
@@ -110,7 +110,7 @@ void process()
       //      Serial.println(json);
       client.sendJSON("Node_change", json);
 
-      Serial.println();
+      //Serial.println();
       Serial.print("hub_says:");
       Serial.print("jackhammer,"); ////NODE ID for example
       Serial.print("0"); //// NODE CHANGE FOR SWITCHES
@@ -155,16 +155,43 @@ void process()
       JsonObject& root = jsonBuffer.createObject();
 
 
-      String deviceId = "5";
+      //      String deviceId = "5";
+      //
+      //      root["success"] = String(data0_val);
+      //      root["nId"] = String(data1_val);
+      //      root["dId"] = String(deviceId);
+      //      String json = "";
+      //      root.printTo(json);
+      //      //      Serial.print("Sending json= ");
+      //      //      Serial.println(json);
+      //      client.sendJSON("addIRDevice", json);
 
-      root["success"] = String(data0_val);
-      root["nId"] = String(data1_val);
-      root["dId"] = String(deviceId);
-      String json = "";
-      root.printTo(json);
-      Serial.print("Sending json= ");
-      Serial.println(json);
-      client.sendJSON("addIRDevice", json);
+      Serial.print("hub_says:");
+      Serial.print("jackhammer,"); ////NODE ID for example
+      Serial.print("1"); //// NODE CHANGE FOR IR ADD
+      Serial.print(",");
+      Serial.print("0");
+      Serial.print(",");
+      Serial.print("0");
+
+      delay(100);
+      while (!Serial.find("jackhammer,"))
+      {
+        delay(100);
+      }
+
+      Serial.println("found jackhammer,");
+      delay(100);
+      String from_node = "";
+      while (Serial.available())
+      {
+        Serial.print(char(Serial.read()));
+        //from_node += (char(Serial.read()));
+        delay(10);
+      }
+      //Serial.println("from_node=" + from_node);
+
+      //send_to_server(from_node);
     }
 
     else

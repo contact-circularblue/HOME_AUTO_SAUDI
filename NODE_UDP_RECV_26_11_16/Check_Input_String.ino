@@ -10,7 +10,7 @@ void Check_Input_String(String Check_Name)
     Parse_State = Check_Name.substring(11, 16);
     //    Serial.print("Parse_State is :");
     //    //Serial.println(Check_Name.substring(11, 14));
-    Serial.println(Parse_State);
+    //Serial.println(Parse_State);
 
     //if (Parse_State.charAt(0) >= 49 && Parse_State.charAt(0) <= 52)
     if (Parse_State.charAt(0) == '0')// || Parse_State.charAt(0) == '1' || Parse_State.charAt(0) == '2')
@@ -23,7 +23,7 @@ void Check_Input_String(String Check_Name)
       int device_ID_int = device_ID.toInt();
 //      Serial.print("integer=");
 //      Serial.println(device_ID_int);
-      if (device_ID_int>=0 && device_ID_int<=21)
+      if (device_ID_int>=0 && device_ID_int<=30)
       {
         Serial.print(Parse_State);
         //Serial.print("the node IP is: ");

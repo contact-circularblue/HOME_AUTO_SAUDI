@@ -22,7 +22,8 @@ char* ssid     = "Circular Blue";
 char* password = "mightycartoon";
 
 //char host[] = "104.131.44.88";
-char host[] = "104.131.44.88";
+//char host[] = "104.131.44.88";
+char host[] = "192.168.1.9";
 int port = 3000;
 
 extern bool socket_connected;
@@ -103,6 +104,7 @@ void loop()
         from_node += (char(Serial.read()));
         delay(10);
       }
+      
       send_to_server(from_node);
     }
   }

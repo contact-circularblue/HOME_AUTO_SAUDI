@@ -1,5 +1,6 @@
 void sendCode() {
-
+  
+//int m=(EEPROM.read(985)-1)*50;
   int m = 0;
 
   int combine_byte[45];

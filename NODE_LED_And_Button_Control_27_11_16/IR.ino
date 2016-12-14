@@ -2,24 +2,22 @@
 
 void IR()
 {
-buttonState = digitalRead(BUTTON_PIN);
-  if (lastButtonState == HIGH && buttonState == LOW) {
-    Serial.println("Released");
-    irrecv.enableIRIn(); // Re-enable receiver
+if (digitalRead(BUTTON_PIN) == LOW)
+  {
+    if (irrecv.decode(&results))
+    {
+      storeCode(&results);
+      irrecv.resume();
+    }
   }
 
-  if (buttonState) {
-    Serial.println("Pressed, sending");
-    digitalWrite(STATUS_PIN, HIGH);
-    sendCode(lastButtonState == buttonState);
-    digitalWrite(STATUS_PIN, LOW);
-    delay(50); // Wait a bit between retransmissions
+  else if (digitalRead(BUTTON_PIN) == HIGH)
+  {
+    Serial.println("IR");
+      Serial.println("Pressed, sending");
+    sendCode();
+    delay(50);
+    while (digitalRead(BUTTON_PIN) == HIGH);
+    irrecv.enableIRIn();
   }
-  else if (irrecv.decode(&results)) {
-    digitalWrite(STATUS_PIN, HIGH);
-    storeCode(&results);
-    irrecv.resume(); // resume receiver
-    digitalWrite(STATUS_PIN, LOW);
-  }
-  lastButtonState = buttonState;
 }

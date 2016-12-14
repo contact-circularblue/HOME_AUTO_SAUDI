@@ -80,6 +80,9 @@ void setup() {
     EEPROM.write(3,0);
     EEPROM.write(4,0);
   */
+
+  EEPROM.write(985, 0);
+  
   //Serial.begin(115200);
   delay(2000);
   Serial.begin(9600);

@@ -1,6 +1,6 @@
-void sendCode() {
+void sendCode(int num) {
 
-  int m = 0;
+  int m = (num-5)*50;
 
   int combine_byte[45];
   int bytes = EEPROM.read(m);

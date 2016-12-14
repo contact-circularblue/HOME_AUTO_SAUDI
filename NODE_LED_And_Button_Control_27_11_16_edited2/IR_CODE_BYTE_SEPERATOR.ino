@@ -1,6 +1,8 @@
-void Code_byte_Seperate()
+void Code_byte_Seperate(int list_pos)
 {
-  j=EEPROM.read(985)*50;
+  j=list_pos*50;
+  Serial.println("j="+j);
+  //j=0;
   /* byte_1=codeValue & a;
     Serial.println(byte_1, HEX);
 
