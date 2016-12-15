@@ -146,6 +146,7 @@ void process()
 
     else if (RID == "addIRDevice")
     {
+      
       Serial.println("RID= addIRDevice");
       Serial.println("success=" + data0_val);
       Serial.println("nId=" + data1_val);
@@ -178,6 +179,7 @@ void process()
       while (!Serial.find("jackhammer,"))
       {
         delay(100);
+        
       }
 
       Serial.println("found jackhammer,");
@@ -185,13 +187,13 @@ void process()
       String from_node = "";
       while (Serial.available())
       {
-        Serial.print(char(Serial.read()));
-        //from_node += (char(Serial.read()));
+        //Serial.print(char(Serial.read()));
+        from_node += (char(Serial.read()));
         delay(10);
       }
-      //Serial.println("from_node=" + from_node);
+      Serial.println("from_node=" + from_node);
 
-      //send_to_server(from_node);
+      send_to_server(from_node);
     }
 
     else
