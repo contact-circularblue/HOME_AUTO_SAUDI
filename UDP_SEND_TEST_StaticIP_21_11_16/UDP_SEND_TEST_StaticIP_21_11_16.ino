@@ -20,7 +20,7 @@ char ReplyBuffer[] = "acknowledged"; // a string to send back
 
 void setup() {
   // Initialise Serial connection
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   // Initialise wifi connection
   wifiConnected = connectWifi();
@@ -46,8 +46,8 @@ void loop() {
       // send a reply, to the IP address and port that sent us the packet we received
       UDP.beginPacket("192.168.1.255", 80);
       //UDP.write("HI! via UDP");
-      Serial.print("jackhammer,1,1");
-      UDP.write("jackhammer,1,1");
+      Serial.print("hub:jackhammer,0,1,1");
+      UDP.write("hub:jackhammer,0,1,1");
 
       UDP.endPacket();
 
@@ -83,6 +83,7 @@ void loop() {
         Serial.print(char(packetBuffer[i]));
 
     }
+    delay(2000);
 
   }
 
@@ -132,7 +133,7 @@ boolean connectWifi() {
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 
-    WiFi.config(ip, gateway, subnet);
+  //  WiFi.config(ip, gateway, subnet);
     Serial.print("working");
 
     Serial.println("");
