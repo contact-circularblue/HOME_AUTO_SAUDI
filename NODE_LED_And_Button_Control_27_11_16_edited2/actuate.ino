@@ -36,40 +36,41 @@ void actuate(char action_local, int switch_num, int switch_value)
             //            Serial.println(got_results->bits);
             //            Serial.print("type=");
             //            Serial.println(got_results->decode_type);
-            break;
+            if (listSize < 15)
+            {
+              listSize++;
+              EEPROM.write(985, listSize);
+              Serial.print("listSize=");
+              Serial.println(listSize);
+              storeCode(&results, listSize - 1);
+
+              String max_dev = "";
+              max_dev += max_devices;
+              int IR_dev_ID = listSize + max_dev.toInt();
+
+              String Str_IR_dev_ID = String(IR_dev_ID);
+
+              String Send_to_ESP = "1,";
+              Send_to_ESP += Str_IR_dev_ID;
+              Send_to_ESP += ",";
+              Send_to_ESP += "0";
+              Serial.print(Send_to_ESP);
+
+              irrecv.resume();
+
+            }
+            else
+              Serial.println("List Full");
+
           }
+          break;
         }
-        irrecv.resume();
       }
-    }
-
-    if (listSize < 15)
-    {
-      listSize++;
-      EEPROM.write(985, listSize);
-      Serial.print("listSize=");
-      Serial.println(listSize);
-      storeCode(&results, listSize-1);
-
-      String max_dev = "";
-      max_dev += max_devices;
-      int IR_dev_ID = listSize + max_dev.toInt();
-
-      String Str_IR_dev_ID = String(IR_dev_ID);
-
-      String Send_to_ESP = "1,";
-      Send_to_ESP += Str_IR_dev_ID;
-      Send_to_ESP += ",";
-      Send_to_ESP += "0";
-      Serial.print(Send_to_ESP);
-
       irrecv.resume();
-
     }
-    else
-      Serial.println("List Full");
-
   }
+
+
 }
 
 

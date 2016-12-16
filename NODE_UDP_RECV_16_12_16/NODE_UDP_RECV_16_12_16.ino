@@ -10,7 +10,7 @@ IPAddress ip(192, 168, 1, 200); //Node static IP
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 255, 0);
 
-IPAddress IP_hub(192,168,1,200);
+IPAddress IP_hub(192, 168, 1, 200);
 
 // UDP variables
 unsigned int localPort = 80;
@@ -20,11 +20,11 @@ char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
 //char ReplyBuffer[] = "acknowledged"; // a string to send back
 char ReplyBuffer[] = "ack"; // a string to send back
 
-String Node_Name="jackhammer"; 
+String Node_Name = "jackhammer";
 String Check_Name = "";
 String Parse_State = "";
-String data_from_switch= "";
-String data_for_HUB= "";
+String data_from_switch = "";
+String data_for_HUB = "";
 
 String Node_IP = "";
 String senders_ip = "";
@@ -42,18 +42,18 @@ void setup() {
   // Initialise Serial connection
   //Serial.begin(115200);
   Serial.begin(9600);
-  
-//  while(1)
-//  {
-//    if(Serial.available())
-//    Serial.print(char(Serial.read()));
-//    delay(10);
-//  }
-  
-  
-  
-  
-  while(Serial.available())
+
+  //  while(1)
+  //  {
+  //    if(Serial.available())
+  //    Serial.print(char(Serial.read()));
+  //    delay(10);
+  //  }
+
+
+
+
+  while (Serial.available())
   {
     Serial.read();
   }
@@ -66,7 +66,7 @@ void setup() {
     udpConnected = connectUDP();
     if (udpConnected) {
       // initialise pins
-    Serial.println("UDP connected");
+      Serial.println("UDP connected");
     }
   }
   //  else
@@ -86,48 +86,50 @@ void loop() {
       int packetSize = UDP.parsePacket();
       if (packetSize)
       {
-//        Serial.println("");
-//        Serial.print("Received packet of size ");
-//        Serial.println(packetSize);
-//        Serial.print("From ");
+        //        Serial.println("");
+        //        Serial.print("Received packet of size ");
+        //        Serial.println(packetSize);
+        //        Serial.print("From ");
         IPAddress remote = UDP.remoteIP();
         for (int i = 0; i < 4; i++)
         {
-//          Serial.print(remote[i], DEC);
+          //          Serial.print(remote[i], DEC);
           if (i < 3)
           {
-//            Serial.print(".");
+            //            Serial.print(".");
           }
         }
-//        Serial.print(", port ");
-//        Serial.print(":");
-//        Serial.println(UDP.remotePort());
+        //        Serial.print(", port ");
+        //        Serial.print(":");
+        //        Serial.println(UDP.remotePort());
 
-        // read the packet into packetBufffer        
+        // read the packet into packetBufffer
         UDP.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-//        Serial.println("Contents:");
-        
+        //        Serial.println("Contents:");
+
         int value = packetBuffer[0] * 256 + packetBuffer[1];
         for (int i = 0; i < packetSize; i++)
         {
-//          Serial.print(char(packetBuffer[i]));
+          //          Serial.print(char(packetBuffer[i]));
           Check_Name += packetBuffer[i];
         }
-//        Serial.println();
+        //        Serial.println();
         //Serial.print("RECEIVED FROM HUB="+Check_Name);
 
-        
+
         // send a reply, to the IP address and port that sent us the packet we received
         Check_Input_String(Check_Name);
       }
-      
-        //Serial.println("NO data");
-        delay(10);
+      if (Serial.available())
+        Msg_from_switch(); // send the change made on the physical switch to hub
+
+      //Serial.println("NO data");
+      delay(10);
 
     }
   }
 
-  Msg_from_switch(); // send the change made on the physical switch to hub
+
 }
 
 
