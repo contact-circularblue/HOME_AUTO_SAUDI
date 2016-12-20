@@ -106,47 +106,32 @@ void loop() {
           char char_to_nodes[25];
 
 
-          UDP.beginPacket("192.168.1.255", 80);
-          convert_to_char(to_nodes, char_to_nodes);
-          //Serial.print("Sending:");
-          //Serial.println(char_to_nodes);
-          UDP.write(char_to_nodes);
 
-
-          UDP.endPacket();
-
-
-          unsigned long previousMillis = 0;        // will store last time LED was updated
-
-          // constants won't change :
-          const long interval = 5000;
-
-          int count_no_ack = 0;
           while (1)
           {
 
-            unsigned long currentMillis = millis();
+            UDP.beginPacket("192.168.1.255", 80);
+            convert_to_char(to_nodes, char_to_nodes);
+            //            Serial.print("Sending:");
+            //            Serial.println(char_to_nodes);
+            UDP.write(char_to_nodes);
 
-            if (currentMillis - previousMillis >= interval)
+
+            UDP.endPacket();
+
+
+
+
+            delay(500);
+            if (UDP_ACK())
             {
-              previousMillis = currentMillis;
-              //Serial.println("ACK not found");
-              count_no_ack++;
-              if (count_no_ack == 2)
-                break;
+              Serial.println("ACK RECVD");
+
+              break;
             }
-            else
-            {
-              //Serial.println("else case");
 
-              if (UDP_ACK())
-              {
-                //Serial.println("ACK RECVD");
 
-                break;
-              }
-
-            }
+            delay(50);
           }
 
         }

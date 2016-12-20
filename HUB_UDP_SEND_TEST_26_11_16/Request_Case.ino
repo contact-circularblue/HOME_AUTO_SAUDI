@@ -16,8 +16,8 @@ void Request_Case(int count)
         Serial.print("sending jackhammer,1,0");
         break;
         /*UDP.write("jackhammer,5,9");
-        Serial.print("sending jackhammer,5,9");
-        break;*/
+          Serial.print("sending jackhammer,5,9");
+          break;*/
       }
     case 3:
       {

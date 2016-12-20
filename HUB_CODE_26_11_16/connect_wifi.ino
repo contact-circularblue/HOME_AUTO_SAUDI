@@ -10,9 +10,10 @@ bool connect_wifi()//String ssid, String password)
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    if (i > 10){
+    if (i > 20){
 state = false;
-break;
+ESP.reset();
+//break;
 }
 i++;
   }
