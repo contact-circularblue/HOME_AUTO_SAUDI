@@ -7,6 +7,9 @@
  On['wifi_details_rec'] = "wifi_details_rec";
  On['get_wifi_details'] = "get_wifi_details";
  On['Node_change'] 		= "Node_change";
+ On['Node_info'] 		= "Node_info";
+ On['Node_all']         = "Node_all";
+ On['Node_devices']     = "Node_devices";
  On['bulb'] 			= "bulb";
  On['fan'] 				= "fan";
  On['disconnect'] 		= "disconnect";
@@ -26,7 +29,12 @@ var Emit = {};
  Emit['fan'] 		  = "fan";
  Emit['dummy']        = "dummy";
  Emit['Node_change']  = "Node_change";
+ Emit['Node_info'] 	  = "Node_info";
+ Emit['Node_devices'] = "Node_devices";
+ Emit['Node_all']     = "Node_all";
  Emit['addIRDevice']  = "addIRDevice";
+ Emit['addDevice']	  = "addDevice";
+
 
  exports.On   = On;
  exports.Emit = Emit;

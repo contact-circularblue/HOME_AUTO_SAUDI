@@ -8,42 +8,46 @@ DeviceType['IR']  = "IR";
 
 exports.DeviceType = DeviceType;
 
-module.exports = function Device(name,type){
-	// var curentState_;
-	// var name_;
-	this.curentState_ = DeviceState.off;
-	this.name_ = name;
-	this.type_ = type;
-	// this.setName(name);
-	// // this.property1 = 5;
-	// this.property2 = "World";
-	// this.method1 = function(arg1){
-	// 	return arg1+" "+this.property2;
-	// }
+module.exports = function Device(id,type){
+	
+
 	this.currentState = function(){
 		return this.curentState_;
 	};
 
-	this.setName = function(name){
-		this.name_ = name;
+	this.setId = function(id){
+		this.id_ = id;
 	};
 
-	this.name = function(){
-			return name_;
+	this.id = function(){
+		return this.id_;
 	};
 
 	this.switchState = function(){
 		if(this.curentState_ == DeviceState.Off){
-			 this.setCurrentState(DeviceState.On);
+			this.setCurrentState(DeviceState.On);
 			return;
 		}
-		setCurrentState(DeviceState.Off);	
+		this.setCurrentState(DeviceState.Off);	
 	};
 	this.setCurrentState = function(state){
-		curentState_ = state;
+		this.curentState_ = state;
+		console.log("DeviceState : " + this.curentState_);
 	}; 
 
 	this.type = function(){
 		return this.type_;
 	};
+
+	this.setType = function(type){
+		this.type_  = type;
+	};
+	
+
+	// call class functions and variables
+
+
+	this.setCurrentState('false');
+	this.setType(type);
+	this.setId(id);
 };

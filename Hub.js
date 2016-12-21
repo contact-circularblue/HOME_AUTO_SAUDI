@@ -10,14 +10,12 @@ module.exports = function Hub(uniqueID,socket){
 	this.wifi_details;
 	this.socket = socket;
 
-	// this.property1 = 5;
-	// this.property2 = "World";
-	// this.method1 = function(arg1){
-	// return arg1+" "+this.property2;
- //  }
+	                       
 
 	 this.addNode = function(name,type){
-		this.Nodes.push(new Node(name,type));
+	 	var node = new Node(name,type);
+		this.Nodes.push(node);
+		return node;
 	};
 
 	this.nodeCount = function(){
@@ -47,7 +45,7 @@ module.exports = function Hub(uniqueID,socket){
 
 	this.setUniqueID = function(uniqueID){
 		this.uniqueID_ = uniqueID;
-	}
+	};
 
 	this.curentState = function(){
 		return this.curentState_;
@@ -66,7 +64,7 @@ module.exports = function Hub(uniqueID,socket){
 
 	this.setWifiDetails = function(wifiDetails){
 		console.log(wifiDetails);
-	}
+	};
 	this.printNodes = function(){
 		console.log("length : " + this.Nodes.length);
 		for (var i = 0; i < this.Nodes.length ; i++) {
@@ -83,7 +81,16 @@ module.exports = function Hub(uniqueID,socket){
 		}
 	};
 	this.emit = function(event,message){
+		  
 		    socket.emit(event,message);
+	};
+
+	this.getNode =function(nodeId){
+		for (var i = 0; i < this.Nodes.length; i++) {
+			if(this.Nodes[i].id() == nodeId){
+				return this.Nodes[i];
+			}
+		}
 	};
 
 }

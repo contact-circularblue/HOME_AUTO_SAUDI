@@ -24,7 +24,6 @@ module.exports = {
 	},
 
 	HubExists : function(uniqueID){
-
 	    var output = Hubs.filter(function(item){  return item.uniqueID() == uniqueID; });
 	    if(output.isEmpty())
 	    {
@@ -39,7 +38,8 @@ module.exports = {
 
 	RemoveHub : function(Hub){
 		    Hubs.splice(Hubs.indexOf(Hub),1);
-		    console.log("Hub Removed");
+		    console.log("Hub Removed : "); 
+		    console.log(Hub);
 	},
     RemoveDuplicates : function(uniqueID_){
     	//console.log(Hubs);

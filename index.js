@@ -91,14 +91,33 @@ io.on('connection', function(socket){
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
           socket.Hub.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
-
     }else{
        console.log(data);
-       socket.Hub.broadCastToMobieDevices(data,Events.Emit.add_Node);
+        // nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type(),'devices':devices });
+
+       var node = socket.Hub.addNode(data.nodeId,data.type);
+       var devices = []; 
+
+       for (var i = 0; i < node.Devices.length; i++) {
+         devices.push({'id':node.Devices[i].id(),'state':node.Devices[i].currentState()});
+       }
+       socket.Hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type(),'devices':devices},Events.Emit.add_Node);
     }
     console.log("add node ");
   
    // socket.Hub.addNode(data.message,'4');
+  });
+
+  socket.on(Events.On.Node_info,function(data){
+
+
+
+    var node = socket.Hub.getNode(data.nodeId);
+    // var response_obj = {};
+    // response_obj['success'] = "true";
+    // response_obj['message'] = " " 
+
+    socket.emit(Events.Emit.Node_info,node);
   });
 
   socket.on(Events.On.chat_message, function(msg){
@@ -138,6 +157,8 @@ io.on('connection', function(socket){
         break;
 
       case DeviceType.Mobile:
+        var response_obj = {};
+
         console.log('Mobile connected');
         socket.DeviceType = DeviceType.Mobile;
 
@@ -146,17 +167,22 @@ io.on('connection', function(socket){
                var Hub_temp = HubController.GetHub(uniqueID);
                socket.Hub = Hub_temp;
                if(Hub_temp.addMobileDevice(socket)==1){
-                  socket.DeviceType = DeviceType.Mobile;
                   console.log("Mobile device added");
-                  callback(true);
+                 // callback(true);
+                  socket.DeviceType = DeviceType.Mobile;
+                  response_obj['success'] = "true";
+                  response_obj['message'] = "Mobile Added";
+               }else{
+                  response_obj['success'] = "false";
+                  response_obj['message'] = "Mobile Not Added";                
                }
-
               // mobiles.push(socket);
           }else{
-                callback(false);
+              //  callback(false);
+                response_obj['success'] = "false";
+                response_obj['message'] = "Hub not found";
           }
-
-        
+          socket.emit(Events.Emit.addDevice,response_obj);
           break;
 
         }
@@ -184,23 +210,31 @@ io.on('connection', function(socket){
   });
 
    socket.on(Events.On.Node_change,function(data){
-
-
         console.log(data);
         switch(socket.DeviceType){
           case DeviceType.Mobile:
-            console.log("Mobile : " + data);
+              console.log("Mobile : ");
+              console.log(data);
               var response_obj = {};
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
               response_obj['dId'] = data.deviceId;
               response_obj['dState'] = data.deviceState;
-
               socket.Hub.emit(Events.Emit.Node_change,{ message: JSON.stringify(response_obj) });
           break;
           case DeviceType.Hub:
-            console.log("Hub : " + data);
-            socket.Hub.broadCastToMobieDevices(data,Events.Emit.Node_change);
+            console.log("Hub : ");
+            console.log(data);
+            var response_obj = {};
+            response_obj['nodeId'] = data.nId;
+            response_obj['deviceId'] = data.dId;
+            response_obj['deviceState'] = data.dState;
+
+            // var node =  socket.Hub.getNode(data.nId);
+            // var device = node.getDevice(data.dId);
+            // device.setCurrentState(data.dState);
+
+            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_change);
           break;
         }
    });
@@ -211,7 +245,8 @@ io.on('connection', function(socket){
         console.log(data);
         switch(socket.DeviceType){
           case DeviceType.Mobile:
-            console.log("Mobile : " + data);
+            console.log("Mobile : ");
+            console.log(data);
               var response_obj = {};
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
@@ -219,10 +254,51 @@ io.on('connection', function(socket){
               socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
           break;
           case DeviceType.Hub:
-            console.log("Hub : " + data);
+            console.log("Hub : ");
+            console.log(data);
+//            { nId: '4234567890', success: 'true', dId: '11' }
+            var response_obj = {};
+            response_obj['nodeId']      = data.nId;
+            response_obj['deviceId']    = data.dId;
+            response_obj['deviceState'] = "true"; 
+            response_obj['success']     = data.success ;      
+
+            var node = socket.Hub.getNode(data.nId);
+            node.addDevice(new Device(data.dId,"IR"));
+
             socket.Hub.broadCastToMobieDevices(data,Events.Emit.addIRDevice);
           break;
         }
+   });
+
+   socket.on(Events.On.Node_all,function(data){
+
+        var nodes = []; 
+        for (var i = 0; i < socket.Hub.Nodes.length; i++) {
+            var devices = [];
+            for (var j = 0; j < socket.Hub.Nodes[i].Devices.length; j++) {
+               console.log("device id " + socket.Hub.Nodes[i].Devices[j].id());
+               console.log("current State " + socket.Hub.Nodes[i].Devices[j].currentState());
+               devices.push({'id':socket.Hub.Nodes[i].Devices[j].id(),'state':socket.Hub.Nodes[i].Devices[j].currentState()});
+            }
+            nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type(),'devices':devices });
+        }
+         console.log(nodes);
+         socket.emit(Events.Emit.Node_all,nodes);
+   });
+
+   socket.on(Events.On.Node_devices,function(data){
+
+          var node =  socket.Hub.getNode(data.nodeId);
+
+          var devices = [];
+          for (var j = 0; j < node.Devices.length; j++) {
+              console.log("device id " + node.Devices[j].id());
+              console.log("current State " + node.Devices[j].currentState());
+              devices.push({'id':node.Devices[j].id(),'state':node.Devices[j].currentState()});
+          }
+          console.log(devices);
+          socket.emit(Events.Emit.Node_devices,devices);
    });
 
 
