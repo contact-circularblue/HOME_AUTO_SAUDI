@@ -42,13 +42,13 @@ module.exports = {
 		    console.log(Hub);
 	},
     RemoveDuplicates : function(uniqueID_){
-    	//console.log(Hubs);
+    	console.log(Hubs);
     		for (var i = 0; i < Hubs.length; i++) {
 		 		if(Hubs[i].uniqueID() == uniqueID_){
 		 			Hubs.splice(i,1);		
 		 		}	
 		 	}
-		// console.log(Hubs);	 	
+		 console.log(Hubs);	 	
 	}
 
 };
