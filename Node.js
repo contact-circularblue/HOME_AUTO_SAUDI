@@ -17,7 +17,6 @@ module.exports = function Node(id,type) {
 	};
 	this.type = function(){
     	return this.type_;
-    
 	};
 
 	this.powerUsage = function(){

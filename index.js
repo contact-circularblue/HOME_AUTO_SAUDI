@@ -198,7 +198,8 @@ io.on('connection', function(socket){
   });
 
   socket.on(Events.On.wifi_details_rec,function(wifi_details){
-    console.log("wifi_details_rec" +  wifi_details);
+    console.log("wifi_details_rec");
+    console.log(wifi_details);
     socket.Hub.broadCastToMobieDevices(wifi_details,Events.On.wifi_details);
   });
 
