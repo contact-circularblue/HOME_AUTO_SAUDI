@@ -48,11 +48,11 @@ module.exports = {
 		 			console.log(Hubs[i].MobileDevices);
 		 			// var temp = 
 		 			hub.MobileDevices = Hubs[i].MobileDevices.concat(hub.MobileDevices);
-
+	 			
 		 			for (var i = 0; i < hub.MobileDevices.length; i++) {
 		 				hub.MobileDevices[i].Hub = hub;
 		 			}
-		 			
+
 		 			Hubs.splice(i,1);		
 		 		}	
 		 	}

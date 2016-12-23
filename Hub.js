@@ -96,7 +96,7 @@ module.exports = function Hub(uniqueID,socket){
 		this.check_alive = data;
 	};
 	this.isAlive = function(){
-		return check_alive;
+		return this.check_alive;
 	};
 
 }
