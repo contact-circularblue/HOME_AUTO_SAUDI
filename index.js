@@ -305,7 +305,8 @@ io.on('connection', function(socket){
 
 
   socket.on(Events.On.dummy,function(data){
-   // socket.emit(Events.On.dummy,data);
+    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
+    socket.emit(Events.On.dummy,data);
   });
    socket.on('check_alive',function(data){
     socket.Hub.checkAlive(true);    
