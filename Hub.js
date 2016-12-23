@@ -77,6 +77,7 @@ module.exports = function Hub(uniqueID,socket){
 		console.log("MobileDevices length" + this.MobileDevices.length);
 
 		for (var i = 0; i < this.MobileDevices.length; i++){
+			console.log(this.MobileDevices[i].id);
 			this.MobileDevices[i].emit(event,data);
 		}
 	};
