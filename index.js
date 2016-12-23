@@ -324,16 +324,16 @@ io.on('connection', function(socket){
           socket.Hub.emit('check_alive','There?');
           socket.Hub.checkAlive(false);    
 
-          setTimeout(function(socket.Hub){
-            console.log('CHECK ALIVE : ' + socket.Hub.uniqueID());
-            if(!socket.Hub.isAlive()){
-              console.log("Hub is Dead : " + socket.Hub.uniqueID())
+          setTimeout(function(Hub){
+            console.log('CHECK ALIVE : ' + Hub.uniqueID());
+            if(!Hub.isAlive()){
+              console.log("Hub is Dead : " + Hub.uniqueID())
 
             }else{
-              console.log("Hub is Alive : " + socket.Hub.uniqueID());
+              console.log("Hub is Alive : " + Hub.uniqueID());
             }
 
-          }, 2000);
+          }, 2000,socket.Hub);
 
         }else{
 
