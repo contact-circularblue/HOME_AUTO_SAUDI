@@ -82,7 +82,8 @@ module.exports = function Hub(uniqueID,socket){
 		}
 	};
 	this.emit = function(event,message){
-		  
+
+	       console.log("SOCKET ID : " + socket.id);		  
 		    socket.emit(event,message);
 	};
 
