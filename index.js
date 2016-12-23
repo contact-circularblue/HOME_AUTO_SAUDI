@@ -307,19 +307,42 @@ io.on('connection', function(socket){
   socket.on(Events.On.dummy,function(data){
    // socket.emit(Events.On.dummy,data);
   });
+   socket.on('check_alive',function(data){
+    socket.Hub.checkAlive(true);    
+  });
 
   socket.on(Events.On.disconnect ,function(data){
-
     //  console.log(socket.DeviceType);
     console.log(data);
     switch(socket.DeviceType){
 
       case DeviceType.Hub:
-          HubController.RemoveHub(socket.Hub.uniqueID());
-          break;
-      case DeviceType.Mobile:
-          console.log("Mobile Removed");
-          break;
+        if(data == "transport close"){
+            // HubController.RemoveHub(socket.Hub.uniqueID());
+        }else if(data == "ping timeout"){
+
+          socket.Hub.emit('check_alive','There?');
+          socket.Hub.checkAlive(false);    
+
+          setTimeout(function(socket.Hub){
+            console.log('CHECK ALIVE : ' + socket.Hub.uniqueID());
+            if(!socket.Hub.isAlive()){
+              console.log("Hub is Dead : " + socket.Hub.uniqueID())
+
+            }else{
+              console.log("Hub is Alive : " + socket.Hub.uniqueID());
+            }
+
+          }, 2000);
+
+        }else{
+
+        }
+
+            break;
+        case DeviceType.Mobile:
+            console.log("Mobile Removed");
+            break;
     }
     connections.splice(connections.indexOf(socket),1);
 		console.log('Disconnected %s sockets connected',connections.length);

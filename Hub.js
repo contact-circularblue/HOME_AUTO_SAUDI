@@ -9,7 +9,7 @@ module.exports = function Hub(uniqueID,socket){
 	this.curentState_;
 	this.wifi_details;
 	this.socket = socket;
-
+	this.check_alive;
 	                       
 
 	 this.addNode = function(name,type){
@@ -91,6 +91,12 @@ module.exports = function Hub(uniqueID,socket){
 				return this.Nodes[i];
 			}
 		}
+	};
+	this.checkAlive = function(data){
+		this.check_alive = data;
+	};
+	this.isAlive = function(){
+		return check_alive;
 	};
 
 }

@@ -5,9 +5,8 @@ module.exports = {
 	AddHub : function(uniqueID_,socket){
 
 
-		this.RemoveDuplicates(uniqueID_);
-
 		var hub = new Hub(uniqueID_,socket);
+		this.RemoveDuplicates(uniqueID_,hub);
 		Hubs.push(hub);
 		console.log("Hub Added ("+__filename+")" );
 
@@ -41,10 +40,19 @@ module.exports = {
 		    console.log("Hub Removed : "); 
 		    console.log(Hub);
 	},
-    RemoveDuplicates : function(uniqueID_){
+    RemoveDuplicates : function(uniqueID_,hub){
     	console.log(Hubs);
     		for (var i = 0; i < Hubs.length; i++) {
 		 		if(Hubs[i].uniqueID() == uniqueID_){
+		 			console.log("mobile devices :")
+		 			console.log(Hubs[i].MobileDevices);
+		 			// var temp = 
+		 			hub.MobileDevices = Hubs[i].MobileDevices.concat(hub.MobileDevices);
+
+		 			for (var i = 0; i < hub.MobileDevices.length; i++) {
+		 				hub.MobileDevices[i].Hub = hub;
+		 			}
+		 			
 		 			Hubs.splice(i,1);		
 		 		}	
 		 	}
