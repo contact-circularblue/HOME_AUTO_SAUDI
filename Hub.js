@@ -103,7 +103,8 @@ module.exports = function Hub(uniqueID,socket){
 	};
 	this.sendHeartBeat = function(){
 		  //  socket.emit('heartbeat',"true");
-		    socket.send('hi');    
+		    socket.emit(Events.On.dummy,'hi');
+//		    socket.send('hi');    
 	};
 
 }

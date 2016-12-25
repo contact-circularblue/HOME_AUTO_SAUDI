@@ -1,7 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 // var io = require('socket.io')(http);
-var io = require('socket.io')(http, {'pingInterval': 40000, 'pingTimeout': 150000});
+var io = require('socket.io')(http, {'pingInterval': 40000, 'pingTimeout': 3500000});
 // io.set('heartbeat timeout', 1200);
  // io.set('transports', ['xhr-polling', 'jsonp-polling']);
 var readlineSync = require('readline-sync');
@@ -170,7 +170,7 @@ socket.on("packetCreate", function(type, data) {
           response_obj['message'] = "Hub Not Added";
        }
         socket.emit(Events.Emit.ack, { message: JSON.stringify(response_obj) } );
-
+        socket.setTimeout(0);
         // socket.setKeepAlive(true,60000); //1 min = 60000 milliseconds.
         // socket.emit('check_alive','There?');
 
@@ -368,15 +368,15 @@ socket.on("packetCreate", function(type, data) {
 
 
 
- //  socket.on(Events.On.dummy,function(data){
- //    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
- // //   socket.emit(Events.On.dummy,data);
- //  });
-
-    socket.on('message',function(data){
+  socket.on(Events.On.dummy,function(data){
     console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
  //   socket.emit(Events.On.dummy,data);
   });
+
+ //    socket.on('message',function(data){
+ //    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
+ // //   socket.emit(Events.On.dummy,data);
+ //  });
    socket.on('check_alive',function(data){
     console.log("data : " + data);
     socket.Hub.checkAlive(true);    
