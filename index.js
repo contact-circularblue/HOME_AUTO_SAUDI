@@ -1,8 +1,8 @@
 var app = require('express')();
 var http = require('http').Server(app);
-// var io = require('socket.io')(http);
-var io = require('socket.io')(http, {'pingInterval': 40000, 'pingTimeout': 3500000});
-// io.set('heartbeat timeout', 1200);
+// var io = require('socket.io')(http);//{'pingInterval': 40000, 'pingTimeout': 3600000}
+var io = require('socket.io')(http, {'pingInterval': 20000, 'pingTimeout': 60000});
+io.set('heartbeat timeout', 120000);
  // io.set('transports', ['xhr-polling', 'jsonp-polling']);
 var readlineSync = require('readline-sync');
 var readline = require('readline');
@@ -65,9 +65,9 @@ app.get('/', function(req, res){
 });
 
 
-setInterval(function() {
-    HubController.UpdateDevices();
-  }, 60000);
+// setInterval(function() {
+//     HubController.UpdateDevices();
+//   }, 60000);
 
 io.on('connection', function(socket){
   
@@ -170,7 +170,7 @@ socket.on("packetCreate", function(type, data) {
           response_obj['message'] = "Hub Not Added";
        }
         socket.emit(Events.Emit.ack, { message: JSON.stringify(response_obj) } );
-        socket.setTimeout(0);
+        // socket.setTimeout(0);
         // socket.setKeepAlive(true,60000); //1 min = 60000 milliseconds.
         // socket.emit('check_alive','There?');
 
@@ -379,7 +379,7 @@ socket.on("packetCreate", function(type, data) {
  //  });
    socket.on('check_alive',function(data){
     console.log("data : " + data);
-    socket.Hub.checkAlive(true);    
+    // socket.Hub.checkAlive(true);    
   });
 
   socket.on(Events.On.disconnect ,function(data){
@@ -396,9 +396,9 @@ socket.on("packetCreate", function(type, data) {
         }else if(data == "ping timeout"){
 
           console.log("ping timeout for Hub");
-          socket.Hub.emit('check_alive','There?');
+          // socket.Hub.emit('check_alive','There?');
           socket.emit('check_alive','There?');
-          socket.Hub.checkAlive(false);
+          // socket.Hub.checkAlive(false);
           // socket.socket.reconnect();
     
 
