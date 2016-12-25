@@ -18,22 +18,27 @@
  On['findHub']			= "findHub";
  On['dummy']            = "dummy";
  On['addIRDevice']      = "addIRDevice";
+ On['Node_devices_IR']  = "Node_devices_IR";
+ On['Node_power']       = "Node_power";
+
 
 
 var Emit = {};
- Emit['wifi_details'] = "wifi_details";
- Emit['add_Node'] 	  = "add_Node";
- Emit['ack'] 		  = "ack";
- Emit['chat_message'] = "chat message";
- Emit['bulb'] 		  = "bulb";
- Emit['fan'] 		  = "fan";
- Emit['dummy']        = "dummy";
- Emit['Node_change']  = "Node_change";
- Emit['Node_info'] 	  = "Node_info";
- Emit['Node_devices'] = "Node_devices";
- Emit['Node_all']     = "Node_all";
- Emit['addIRDevice']  = "addIRDevice";
- Emit['addDevice']	  = "addDevice";
+ Emit['wifi_details']    = "wifi_details";
+ Emit['add_Node'] 	     = "add_Node";
+ Emit['ack'] 		     = "ack";
+ Emit['chat_message']    = "chat message";
+ Emit['bulb'] 		     = "bulb";
+ Emit['fan'] 		     = "fan";
+ Emit['dummy']           = "dummy";
+ Emit['Node_change']     = "Node_change";
+ Emit['Node_info'] 	     = "Node_info";
+ Emit['Node_devices']    = "Node_devices";
+ Emit['Node_all']        = "Node_all";
+ Emit['addIRDevice']     = "addIRDevice";
+ Emit['addDevice']	     = "addDevice";
+ Emit['Node_devices_IR'] = "Node_devices_IR";
+ Emit['Node_power']      = "Node_power";
 
 
  exports.On   = On;

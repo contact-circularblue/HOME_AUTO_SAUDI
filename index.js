@@ -1,14 +1,20 @@
 var app = require('express')();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+// var io = require('socket.io')(http);
+var io = require('socket.io')(http, {'pingInterval': 40000, 'pingTimeout': 150000});
+// io.set('heartbeat timeout', 1200);
+ // io.set('transports', ['xhr-polling', 'jsonp-polling']);
 var readlineSync = require('readline-sync');
 var readline = require('readline');
 var typeOf = require('typeof');
+var net = require('net');
+
+
 
 //classes 
 var Hub = require('./Hub');
 var HubController = require('./HubController');
-//var exampleClass = require('./class_test');
+var Device = require('./Device');
 var Events = require('./Events');
 ///
 
@@ -59,13 +65,17 @@ app.get('/', function(req, res){
 });
 
 
+setInterval(function() {
+    HubController.UpdateDevices();
+  }, 60000);
 
 io.on('connection', function(socket){
   
   connections.push(socket);
-  
-  console.log('connected %s sockets connected', connections.length)
-  
+  console.log('connected %s sockets connected', connections.length);
+  // console.log('transport ' + socket.io.engine.transport.name);
+  console.log(socket.conn.transport.name);
+
   var socketId = socket.id;
   var clientIp = socket.request.connection.remoteAddress;
 
@@ -82,7 +92,13 @@ io.on('connection', function(socket){
   console.log("socket ID : " + socketId);
   console.log("Client IP : " + clientIp);
   // console.log("username  : " + socket.username); 
-  
+  socket.on("packet", function(type, data) {
+    console.log("received ping");
+});
+
+socket.on("packetCreate", function(type, data) {
+    console.log("sending pong");
+});
 
 
   socket.on(Events.On.add_Node,function(data){
@@ -126,12 +142,12 @@ io.on('connection', function(socket){
   });
 
   socket.on(Events.On.addDevice, function(data,callback){
-    console.log(data);
+    // console.log(data);
     var deviceType,uniqueID;  
     deviceType = data.deviceType;
     uniqueID   = data.uniqueID; 
-    console.log("uniqueID" + uniqueID); 
-    console.log("deviceType" + deviceType); 
+    // console.log("uniqueID" + uniqueID); 
+    // console.log("deviceType" + deviceType); 
 
     switch(deviceType)
     { 
@@ -154,6 +170,10 @@ io.on('connection', function(socket){
           response_obj['message'] = "Hub Not Added";
        }
         socket.emit(Events.Emit.ack, { message: JSON.stringify(response_obj) } );
+
+        // socket.setKeepAlive(true,60000); //1 min = 60000 milliseconds.
+        // socket.emit('check_alive','There?');
+
         break;
 
       case DeviceType.Mobile:
@@ -195,6 +215,8 @@ io.on('connection', function(socket){
     response_obj['success'] = "true";
     response_obj['message'] = [data.wifi_name,data.wifi_pass] ;
     socket.Hub.emit(Events.Emit.wifi_details ,{ message: JSON.stringify(response_obj) } );
+    console.log('wifi_details');
+    console.log(response_obj);
   });
 
   socket.on(Events.On.wifi_details_rec,function(wifi_details){
@@ -267,13 +289,12 @@ io.on('connection', function(socket){
             var node = socket.Hub.getNode(data.nId);
             node.addDevice(new Device(data.dId,"IR"));
 
-            socket.Hub.broadCastToMobieDevices(data,Events.Emit.addIRDevice);
+            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
           break;
         }
    });
 
    socket.on(Events.On.Node_all,function(data){
-
         var nodes = []; 
         for (var i = 0; i < socket.Hub.Nodes.length; i++) {
             var devices = [];
@@ -284,8 +305,20 @@ io.on('connection', function(socket){
             }
             nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type(),'devices':devices });
         }
-         console.log(nodes);
+         // console.log(nodes);
          socket.emit(Events.Emit.Node_all,nodes);
+   });
+
+   socket.on(Events.On.Node_devices_IR,function(data){
+
+        var node =  socket.Hub.getNode(data.nodeId);
+        // console.log(node);
+        var IRDevice = [];
+        console.log("IR DEVICES FOR NODE : " + node.id());
+        for (var i = 0; i < node.IRDevices.length; i++) {
+           console.log(node.IRDevices[i].id());
+        }
+       // socket.emit(Events.Emit.Node_devices_IR,IRDevice);
    });
 
    socket.on(Events.On.Node_devices,function(data){
@@ -294,36 +327,80 @@ io.on('connection', function(socket){
 
           var devices = [];
           for (var j = 0; j < node.Devices.length; j++) {
-              console.log("device id " + node.Devices[j].id());
-              console.log("current State " + node.Devices[j].currentState());
+              // console.log("device id " + node.Devices[j].id());
+              // console.log("current State " + node.Devices[j].currentState());
               devices.push({'id':node.Devices[j].id(),'state':node.Devices[j].currentState()});
           }
+          console.log("Node devices : ")
           console.log(devices);
           socket.emit(Events.Emit.Node_devices,devices);
    });
 
+  socket.on(Events.On.Node_power,function(data){
+
+        console.log("NODE POWER");
+        console.log(data);
+        switch(socket.DeviceType){
+          case DeviceType.Mobile:
+            console.log("Mobile : ");
+            console.log(data);
+              var response_obj = {};
+              response_obj['success'] = "true";
+              response_obj['nId'] = data.nodeId;
+
+              socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
+          break;
+          case DeviceType.Hub:
+            console.log("Hub : ");
+            console.log(data);
+//            { nId: '4234567890', success: 'true', dId: '11' }
+            var response_obj = {};
+            response_obj['nodeId']      = data.nId;
+            response_obj['power']    = data.power;     
+
+            var node = socket.Hub.getNode(data.nId);
+          //  node.addDevice(new Device(data.dId,"IR"));
+
+            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
+          break;
+        }
+   });
 
 
-  socket.on(Events.On.dummy,function(data){
+
+ //  socket.on(Events.On.dummy,function(data){
+ //    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
+ // //   socket.emit(Events.On.dummy,data);
+ //  });
+
+    socket.on('message',function(data){
     console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
-    socket.emit(Events.On.dummy,data);
+ //   socket.emit(Events.On.dummy,data);
   });
    socket.on('check_alive',function(data){
+    console.log("data : " + data);
     socket.Hub.checkAlive(true);    
   });
 
   socket.on(Events.On.disconnect ,function(data){
     //  console.log(socket.DeviceType);
-    console.log(data);
+    // console.log(data);
     switch(socket.DeviceType){
 
       case DeviceType.Hub:
         if(data == "transport close"){
+
+          console.log("transport close for Hub");
+
             // HubController.RemoveHub(socket.Hub.uniqueID());
         }else if(data == "ping timeout"){
 
+          console.log("ping timeout for Hub");
           socket.Hub.emit('check_alive','There?');
-          socket.Hub.checkAlive(false);    
+          socket.emit('check_alive','There?');
+          socket.Hub.checkAlive(false);
+          // socket.socket.reconnect();
+    
 
           setTimeout(function(Hub){
             console.log('CHECK ALIVE : ' + Hub.uniqueID());
@@ -334,7 +411,7 @@ io.on('connection', function(socket){
               console.log("Hub is Alive : " + Hub.uniqueID());
             }
 
-          }, 2000,socket.Hub);
+          }, 5000,socket.Hub);
 
         }else{
 
@@ -342,7 +419,16 @@ io.on('connection', function(socket){
 
             break;
         case DeviceType.Mobile:
-            console.log("Mobile Removed");
+
+        if(data == "transport close"){
+
+          console.log("transport close for Mobile");
+
+        }else if(data == "ping timeout"){
+
+          console.log("ping timeout for Mobile");
+        }
+
             break;
     }
     connections.splice(connections.indexOf(socket),1);
@@ -352,6 +438,7 @@ io.on('connection', function(socket){
 });
 
 http.listen(3000, function(){
+
   console.log('listening on port :3000');
 });
 

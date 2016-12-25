@@ -6,6 +6,7 @@ module.exports = function Node(id,type) {
 
 	this.powerUsage_=0.0;
 	this.Devices    = [];
+	this.IRDevices  = [];
 	this.type_      = type;
 	this.id_        = id;
 
@@ -32,8 +33,18 @@ module.exports = function Node(id,type) {
 	};
 
 	this.addDevice = function(device){
-		this.Devices.push(device);
+		
+		switch(device.type()){
+
+			case 'Default':
+				this.Devices.push(device);
+				break;
+			case 'IR':
+		        this.IRDevices.push(device);
+			    break;
+		};
 	};
+
 
 	this.getDevice =function(deviceId){
 		for (var i = 0; i < this.Devices.length; i++) {

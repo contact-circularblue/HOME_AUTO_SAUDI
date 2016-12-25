@@ -4,11 +4,10 @@ module.exports = {
 
 	AddHub : function(uniqueID_,socket){
 
-
 		var hub = new Hub(uniqueID_,socket);
 		this.RemoveDuplicates(uniqueID_,hub);
 		Hubs.push(hub);
-		console.log("Hub Added ("+__filename+")" );
+		// console.log("Hub Added ("+__filename+")" );
 
 		return hub;
 	},
@@ -41,22 +40,27 @@ module.exports = {
 		    console.log(Hub);
 	},
     RemoveDuplicates : function(uniqueID_,hub){
-    	console.log(Hubs);
+    	//console.log(Hubs);
+    		// console.log(" "+ Hubs.length);
     		for (var i = 0; i < Hubs.length; i++) {
 		 		if(Hubs[i].uniqueID() == uniqueID_){
-		 			console.log("mobile devices :")
-		 			console.log(Hubs[i].MobileDevices);
+		 	//		console.log("mobile devices :")
+		 	//		console.log(Hubs[i].MobileDevices);
 		 			// var temp = 
 		 			hub.MobileDevices = Hubs[i].MobileDevices.concat(hub.MobileDevices);
-	 			
-		 			for (var i = 0; i < hub.MobileDevices.length; i++) {
-		 				hub.MobileDevices[i].Hub = hub;
+		 			for (var j = 0; j < hub.MobileDevices.length; j++) {
+		 				hub.MobileDevices[j].Hub = hub;
 		 			}
-
+		 //			console.log("RemoveDuplicates  " + i);
 		 			Hubs.splice(i,1);		
 		 		}	
 		 	}
-		 console.log(Hubs);	 	
+		// console.log(Hubs);	 	
+	},
+	UpdateDevices : function(){
+		console.log("UpdateDevices");
+		for (var i = 0; i < Hubs.length; i++) {
+			Hubs[i].sendHeartBeat();
+		}
 	}
-
 };

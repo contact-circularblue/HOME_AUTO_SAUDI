@@ -8,9 +8,8 @@ DeviceType['IR']  = "IR";
 
 exports.DeviceType = DeviceType;
 
-module.exports = function Device(id,type){
+module.exports = function Device(id,type){	
 	
-
 	this.currentState = function(){
 		return this.curentState_;
 	};

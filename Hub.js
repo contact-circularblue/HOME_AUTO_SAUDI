@@ -10,7 +10,8 @@ module.exports = function Hub(uniqueID,socket){
 	this.wifi_details;
 	this.socket = socket;
 	this.check_alive;
-	                       
+	    
+	 console.log("HUB.js SOCKET ID : " + socket.id);                      
 
 	 this.addNode = function(name,type){
 	 	var node = new Node(name,type);
@@ -63,7 +64,7 @@ module.exports = function Hub(uniqueID,socket){
 	};
 
 	this.setWifiDetails = function(wifiDetails){
-		console.log(wifiDetails);
+		// console.log(wifiDetails);
 	};
 	this.printNodes = function(){
 		console.log("length : " + this.Nodes.length);
@@ -99,6 +100,10 @@ module.exports = function Hub(uniqueID,socket){
 	};
 	this.isAlive = function(){
 		return this.check_alive;
+	};
+	this.sendHeartBeat = function(){
+		  //  socket.emit('heartbeat',"true");
+		    socket.send('hi');    
 	};
 
 }
