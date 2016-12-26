@@ -7,7 +7,8 @@ void setup() {
   Serial.begin(9600);
   ESP_hub.begin(9600);
   //Serial.print("STARTING");
-
+pinMode(A3, OUTPUT);
+pinMode(A4, OUTPUT);
 
 }
 
@@ -19,11 +20,17 @@ void loop() {
     {
   //    Serial.print("1");
       delay(50);
+      String from_hub="";
     while(ESP_hub.available())
       {
-      Serial.print(char(ESP_hub.read()));
+      from_hub+=char(ESP_hub.read());
       delay(1);
       }
+      if(from_hub.indexOf("LED")!=-1)
+      {
+        
+      }
+      
     }
     
     //      Serial.print("jackhammer,0,2,0");

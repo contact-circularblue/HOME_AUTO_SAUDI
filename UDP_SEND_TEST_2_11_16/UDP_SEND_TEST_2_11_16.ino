@@ -2,8 +2,8 @@
 #include <WiFiUDP.h>
 
 // wifi connection variables
-const char* ssid = "NETGEAR87";
-const char* password = "mightycartoon777";
+char* ssid = "Circular Blue";
+char* password = "mightycartoon";
 boolean wifiConnected = false;
 
 // UDP variables
@@ -15,7 +15,7 @@ char ReplyBuffer[] = "acknowledged"; // a string to send back
 
 void setup() {
 // Initialise Serial connection
-Serial.begin(115200);
+Serial.begin(9600);
 
 // Initialise wifi connection
 wifiConnected = connectWifi();
@@ -111,7 +111,7 @@ Serial.print("Connecting");
 while (WiFi.status() != WL_CONNECTED) {
 delay(500);
 Serial.print(".");
-if (i > 10){
+if (i > 20){
 state = false;
 break;
 }

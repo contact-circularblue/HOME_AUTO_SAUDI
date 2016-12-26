@@ -24,11 +24,12 @@ SocketIOClient client;
 char* ssid     = "Circular Blue";
 char* password = "mightycartoon";
 
-//char host[] = "104.131.44.88";
-char host[] = "192.168.1.12";
+char host[] = "104.131.44.88";
+//char host[] = "192.168.1.9";
 int port = 3000;
 
 extern bool socket_connected;
+extern int flag;
 
 extern String rcvd_msg_full;
 extern String RID;
@@ -57,7 +58,7 @@ bool hub_connected = false;
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // constants won't change :
-const long interval = 5000;           // interval at which to send dummy packet
+const long interval = 25000;           // interval at which to send dummy packet
 
 
 String json_add_hub = "";
@@ -69,7 +70,7 @@ void setup() {
   JsonObject& root_add_node = jsonBuffer.createObject();
   root_add_node["nodeId"] = node_Id;
   root_add_node["type"] = String(node_Id[0]);
-  
+
   root_add_node.printTo(json_add_node);
 
   JsonObject& root_hub_add = jsonBuffer.createObject();
@@ -106,8 +107,9 @@ void setup() {
 
   add_hub();
 
-  
-Serial.println(ESP.getResetReason());
+  client.monitor();
+
+  Serial.println(ESP.getResetReason());
 
   //Serial.println("hum yahaan hain!");
 
@@ -137,32 +139,57 @@ void loop()
         from_node += (char(Serial.read()));
         delay(10);
       }
-
+      Serial.print("send_to_server=");
+      Serial.println(from_node);
+      while (Serial.available())
+        Serial.read();
       send_to_server(from_node);
     }
   }
 
-  
+
 
 
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillis >= interval) 
+  //  Serial.print("currentMillis - previousMillis= ");
+  //  Serial.println(currentMillis - previousMillis);
+
+  if (currentMillis - previousMillis >= interval)
   {
-//    Serial.print("Available heap=");
-//    Serial.println(ESP.getFreeHeap());
-//    previousMillis = currentMillis;
-//
-//    client.heartbeat(0);
-//    delay(10);
-//    client.monitor();
-//previousMillis = currentMillis;
-//
-//Serial.println("sent dummy");
-//client.send("dummy", "message", "1");
+    //    Serial.print("Available heap=");
+    //    Serial.println(ESP.getFreeHeap());
+    //    previousMillis = currentMillis;
+    //
+
+    previousMillis = currentMillis;
+
+
+
+    if (flag == 1)
+    {
+      while (!connect_to_server());
+
+
+      while (!connect_socket());
+      // Serial.println("SOCKET CONNECTED NOW");
+      //client.send("connection", "message", "Connected !!!!");
+
+      delay(100);
+      monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+      add_hub();
+
+      client.monitor();
+
+      flag = 0;
+    }
+
+    //Serial.println("sent dummy");
+    //client.send("dummy", "message", "1");
 
   }
-  
+
 }
 
 

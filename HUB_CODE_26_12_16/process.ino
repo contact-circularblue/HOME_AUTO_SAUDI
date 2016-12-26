@@ -102,15 +102,51 @@ void process()
     else if (RID == "dummy")
     {
       Serial.println("Dummy reply ID= " + RID);
+      //client.send("dummy", "message", "1");
     }
+
+    //    else if (RID == "message")
+    //    {
+    ////      Serial.println("check_alive");
+    ////      delay(10);
+    ////      client.send("check_alive", "message", "1");
+    ////      delay(10);
+    ////      client.send("dummy", "message", "1");
+    //
+    //Serial.println("sent dummy");
+    //client.send("message", "message", "1");
+    ////      Serial.println("Sent Replies");
+    //    }
 
     else if (RID == "check_alive")
     {
       Serial.println("check_alive");
-      delay(10);
-      client.send("check_alive", "message", "1");
-      delay(10);
-      client.send("dummy", "message", "1");
+
+      client.reconnect_socket();
+    }
+
+    else if (RID == "Node_power")
+    {
+      Serial.print("hub_says:");
+      Serial.print("jackhammer,"); ////NODE ID for example
+      Serial.print("0"); //// NODE CHANGE FOR SWITCHES
+      Serial.print(",");
+      Serial.print("30");
+      Serial.print(",");
+      Serial.print("0");
+
+
+
+      //      int power = 198;
+      //      JsonObject& root = jsonBuffer.createObject();
+
+      //      root["nId"] = String(nodeId);
+      //      root["power"] = String(power);
+      //      String json = "";
+      //      root.printTo(json);
+      //      //      Serial.print("Sending json= ");
+      //      //      Serial.println(json);
+      //      client.sendJSON("Node_power", json);
     }
 
     else if (RID == "Node_change")
@@ -170,7 +206,7 @@ void process()
       Serial.println("success=" + data0_val);
       Serial.println("nId=" + data1_val);
 
-      delay(3000);
+      //delay(3000);
 
       JsonObject& root = jsonBuffer.createObject();
 
@@ -195,24 +231,24 @@ void process()
       Serial.print("0");
 
       delay(100);
-      while (!Serial.find("jackhammer,"))
-      {
-        delay(100);
-
-      }
-
-      Serial.println("found jackhammer,");
-      delay(100);
-      String from_node = "";
-      while (Serial.available())
-      {
-        //Serial.print(char(Serial.read()));
-        from_node += (char(Serial.read()));
-        delay(10);
-      }
-      Serial.println("from_node=" + from_node);
-
-      send_to_server(from_node);
+      //      while (!Serial.find("jackhammer,"))
+      //      {
+      //        delay(100);
+      //
+      //      }
+      //
+      ////      Serial.println("found jackhammer,");
+      //      delay(100);
+      //      String from_node = "";
+      //      while (Serial.available())
+      //      {
+      //        //Serial.print(char(Serial.read()));
+      //        from_node += (char(Serial.read()));
+      //        delay(10);
+      //      }
+      ////      Serial.println("from_node=" + from_node);
+      //
+      //      send_to_server(from_node);
     }
 
     else

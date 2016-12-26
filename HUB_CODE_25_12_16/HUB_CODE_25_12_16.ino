@@ -57,7 +57,7 @@ bool hub_connected = false;
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // constants won't change :
-const long interval = 5000;           // interval at which to send dummy packet
+const long interval = 25000;           // interval at which to send dummy packet
 
 
 String json_add_hub = "";
@@ -147,17 +147,20 @@ void loop()
 
   unsigned long currentMillis = millis();
 
+//  Serial.print("currentMillis - previousMillis= ");
+//  Serial.println(currentMillis - previousMillis);
+
   if (currentMillis - previousMillis >= interval) 
   {
 //    Serial.print("Available heap=");
 //    Serial.println(ESP.getFreeHeap());
 //    previousMillis = currentMillis;
 //
-//    client.heartbeat(0);
-//    delay(10);
-//    client.monitor();
-//previousMillis = currentMillis;
-//
+    client.heartbeat(1);
+    delay(10);
+    client.monitor();
+previousMillis = currentMillis;
+
 //Serial.println("sent dummy");
 //client.send("dummy", "message", "1");
 
