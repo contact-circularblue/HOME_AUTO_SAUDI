@@ -16,22 +16,25 @@ void actuate(char action_local, int switch_num, int switch_value)
       sendCode(switch_num);
       delay(50);
       while (digitalRead(BUTTON_PIN) == HIGH);
-      irrecv.enableIRIn();
+      //irrecv.enableIRIn();
     }
   }
   if (action_local == '1')
   {
+
     disable_interrupts();  /////////////////////disable the switches at the time of IR addition
 
     //Serial.println("initializing IR Add");
     int got_code = 0;
+    irrecv.enableIRIn();
     while (1)
     {
       while (!irrecv.decode(&results));
       {
         //Serial.println("Recvd code");
         decode_results *got_results = &results;
-        if (got_results->decode_type >= -1)
+        //if (got_results->decode_type >= -1)   // will work for all type of codes
+        if (got_results->decode_type == -1)      // will wok only for unknown codes
         {
           if (got_results->bits > 0 || got_results->rawlen > 7)
           {
@@ -43,8 +46,7 @@ void actuate(char action_local, int switch_num, int switch_value)
             break;
           }
         }
-        irrecv.resume();
-
+        //irrecv.resume();
       }
     }
 
@@ -56,8 +58,6 @@ void actuate(char action_local, int switch_num, int switch_value)
       //      Serial.println(listSize);
       storeCode(&results, listSize - 1);
 
-     // Serial.print("out of ir store code");
-
       String max_dev = "";
       max_dev += max_devices;
       int IR_dev_ID = listSize + max_dev.toInt();
@@ -65,13 +65,18 @@ void actuate(char action_local, int switch_num, int switch_value)
       String Str_IR_dev_ID = String(IR_dev_ID);
 
       String Send_to_ESP = "1,";
-      Send_to_ESP += Str_IR_dev_ID;
+      Send_to_ESP += Str_IR_dev_ID; 
       Send_to_ESP += ",";
       Send_to_ESP += "0";
       Serial.print(Send_to_ESP);
 
-      irrecv.resume();  
-      en_int();  ///////////////////////////////////////re enable the interrupts when the ir addition is complete
+while(Serial.available())
+{
+  Serial.read();
+}
+      irrecv.resume();
+    
+      en_int();  ///////////////////////////////re enable the interrupts when the ir addition is complete
     }
     else
     {
@@ -79,7 +84,7 @@ void actuate(char action_local, int switch_num, int switch_value)
       en_int();  ///////////////////////////////re enable the interrupts when the ir addition is complete
     }
   }
-  // en_int();  ////////////////////////////////re enable the interrupts when the ir addition is complete
+
 }
 
 
