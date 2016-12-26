@@ -1,6 +1,5 @@
 void Msg_from_switch()
 {
-
   if (Serial.available())
   {
     data_from_switch = "";
@@ -9,13 +8,12 @@ void Msg_from_switch()
     //    Serial.print("data from ARDUINO: " + data_from_switch);
     //    Serial.println();
 
-
     while (Serial.available())
     {
       data_from_switch += char(Serial.read());
-      delay(1);
+      delay(10);
     }
-    //    Serial.println("data from ARDUINO: " + data_from_switch);
+    //Serial.println("data from ARDUINO: " + data_from_switch);
     //
     //    Serial.println(data_from_switch.charAt(0));
 
@@ -31,7 +29,7 @@ void Msg_from_switch()
       data_for_HUB += ",";
       data_for_HUB += data_from_switch;
 
-      //      Serial.println("data_for_HUB is: " + data_for_HUB);
+      // Serial.println("data_for_HUB is: " + data_for_HUB);
       //      Serial.println();
 
       IPAddress hub_ip_fn(192, 168, 1, 255);
@@ -46,7 +44,7 @@ void Msg_from_switch()
         UDP.write(data_for_HUB_local);
         UDP.endPacket();
 
-        delay(50);
+        delay(500);
 
         int packetSize = 0;
         packetSize = UDP.parsePacket();
