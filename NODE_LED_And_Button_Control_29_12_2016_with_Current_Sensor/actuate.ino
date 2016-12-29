@@ -72,8 +72,8 @@ void actuate(char action_local, int switch_num, int switch_value)
             max_dev += max_devices;
             int IR_dev_ID = List_Size + max_dev.toInt();
 
-            Serial.print(" IR_dev_ID =");
-            Serial.println(IR_dev_ID);
+//            Serial.print(" IR_dev_ID =");
+//            Serial.println(IR_dev_ID);
 
 
             String Str_IR_dev_ID = String(IR_dev_ID);

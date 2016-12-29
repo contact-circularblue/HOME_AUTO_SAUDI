@@ -6,30 +6,30 @@ int IR_ADD()
   int POS = 0;
   int Flag = 0;
   ListSize = EEPROM.read(985);
-  Serial.print(" ListSize =");
-  Serial.println(ListSize);
+//  Serial.print(" ListSize =");
+//  Serial.println(ListSize);
 
   if (ListSize > 0 && ListSize < 13)
   {
-    Serial.println("Going in loop");
+//    Serial.println("Going in loop");
     
     for (int i = 0; i < ListSize; i++)
     {
       myList.add(EEPROM.read(986 + i));
     }
 
-    Serial.print("There are ");
-    Serial.print(ListSize);
-    Serial.print(" integers in the list.");
-    for (int h = 0; h < myList.size(); h++)
-    {
-      int val = myList.get(h);
-      Serial.print(val);
-      Serial.print("\t");
-    }
-
-    Serial.print(" myList.size()=");
-    Serial.println(myList.size());
+//    Serial.print("There are ");
+//    Serial.print(ListSize);
+//    Serial.print(" integers in the list.");
+//    for (int h = 0; h < myList.size(); h++)
+//    {
+//      int val = myList.get(h);
+//      Serial.print(val);
+//      Serial.print("\t");
+//    }
+//
+//    Serial.print(" myList.size()=");
+//    Serial.println(myList.size());
 
     if (myList.size() == 1)
     {
@@ -38,16 +38,16 @@ int IR_ADD()
         myList.add(0, 1);
 
         EEPROM.write(985, myList.size());
-        Serial.print("There are ");
-        Serial.print(EEPROM.read(985));
-        Serial.print(" integers in the list.");
-
-        for (int h = 0; h < myList.size(); h++)
-        {
-          int val = myList.get(h);
-          Serial.print(val);
-          Serial.print("\t");
-        }
+//        Serial.print("There are ");
+//        Serial.print(EEPROM.read(985));
+//        Serial.print(" integers in the list.");
+//
+//        for (int h = 0; h < myList.size(); h++)
+//        {
+//          int val = myList.get(h);
+//          Serial.print(val);
+//          Serial.print("\t");
+//        }
         return 1;
       }
       else
@@ -84,30 +84,30 @@ int IR_ADD()
       }
       if (Flag != 1)
       {
-        Serial.println("Flag not one");
+//        Serial.println("Flag not one");
         myList.add(ListSize, ListSize + 1);
         value = ListSize + 1;
         POS = ListSize;
       }
     }
 
-    Serial.println("Reached till here");
+//    Serial.println("Reached till here");
     EEPROM.write(985, myList.size());
-    Serial.print(" myList.size =");
-    Serial.println(EEPROM.read(985));
+//    Serial.print(" myList.size =");
+//    Serial.println(EEPROM.read(985));
 
     for (int i = 0; i < myList.size(); i++)
     {
       EEPROM.write(986 + i, myList.get(i));
-      Serial.println(i);
+//      Serial.println(i);
     }
 
-    Serial.println("updated");
-
-    Serial.print("Element added = ");
-    Serial.println(value);
-    Serial.print("AT POS = ");
-    Serial.print(POS);
+//    Serial.println("updated");
+//
+//    Serial.print("Element added = ");
+//    Serial.println(value);
+//    Serial.print("AT POS = ");
+//    Serial.print(POS);
 
     return value;
   }
@@ -124,6 +124,6 @@ int IR_ADD()
 
   else if (ListSize > 12)
   {
-    Serial.print("List Full");
+//    Serial.print("List Full");
   }
 }
