@@ -17,7 +17,7 @@
 
 #include <IRremote.h>
 #include<EEPROM.h>
-int RECV_PIN = 11;
+int RECV_PIN = A0;
 int BUTTON_PIN_1 = 6;
 int BUTTON_PIN_2 = 7;
 int BUTTON_PIN_3 = 8;

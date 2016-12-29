@@ -1,4 +1,3 @@
-
 int IR_ADD()
 {
   myList.clear();
@@ -75,6 +74,7 @@ int IR_ADD()
         int diff = myList.get(i++) - myList.get(i) ;
         if (diff > 1)
         {
+           
           myList.add(i + 1, myList.get(i) + 1);
           value = myList.get(i) + 1;
           POS = i + 1;
