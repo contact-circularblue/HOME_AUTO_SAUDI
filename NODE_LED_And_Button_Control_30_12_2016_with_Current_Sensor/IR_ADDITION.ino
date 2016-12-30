@@ -36,17 +36,19 @@ int IR_ADD()
       {
         myList.add(0, 1);
 
+        Serial.print("Entered this loop");
         EEPROM.write(985, myList.size());
-        //        Serial.print("There are ");
-        //        Serial.print(EEPROM.read(985));
-        //        Serial.print(" integers in the list.");
-        //
-        //        for (int h = 0; h < myList.size(); h++)
-        //        {
-        //          int val = myList.get(h);
-        //          Serial.print(val);
-        //          Serial.print("\t");
-        //        }
+        Serial.print("There are ");
+        Serial.print(EEPROM.read(985));
+        Serial.print(" integers in the list.");
+
+        for (int h = 0; h < myList.size(); h++)
+        {
+          int val = myList.get(h);
+          EEPROM.write(986 + h, val);
+          Serial.print(val);
+          Serial.print("\t");
+        }
         return 1;
       }
       else
@@ -54,37 +56,62 @@ int IR_ADD()
         myList.add(1, 2);
 
         EEPROM.write(985, myList.size());
-                Serial.print("There are ");
-                Serial.print(EEPROM.read(985));
-                Serial.print(" integers in the list.");
-        
-                for (int h = 0; h < myList.size(); h++)
-                {
-                  int val = myList.get(h);
-                  Serial.print(val);
-                  Serial.print("\t");
-                }
+        //        Serial.print("There are ");
+        //        Serial.print(EEPROM.read(985));
+        //        Serial.print(" integers in the list.");
+
+        for (int h = 0; h < myList.size(); h++)
+        {
+          int val = myList.get(h);
+          EEPROM.write(986 + h, val);
+          //          Serial.print(val);
+          //          Serial.print("\t");
+        }
         return 2;
       }
     }
     else
     {
+//      Serial.print("There are ");
+//      Serial.print(myList.size());
+//      Serial.print(" integers in the list.");
+      for (int h = 0; h < myList.size(); h++)
+      {
+        int val = myList.get(h);
+//        Serial.print(val);
+//        Serial.print("\t");
+      }
+
       for (int i = 0; i < ListSize - 1; i++)
       {
-        int diff = myList.get(i++) - myList.get(i) ;
-        if (diff > 1)
+        //Serial.print("going in for loop ");
+        // int diff = myList.get(i++) - myList.get(i) ;
+        // if (diff > 1)
+//        Serial.print("myList.get(i)= ");
+//        Serial.println(myList.get(i));
+//        Serial.print("myList.get(i+1)= ");
+//        Serial.println(myList.get(i+1));
+
+        if ((myList.get(i+1) - myList.get(i)) > 1)
         {
-           
+          Serial.print("going in if condition");
           myList.add(i + 1, myList.get(i) + 1);
           value = myList.get(i) + 1;
           POS = i + 1;
+
+//          Serial.println();
+//          Serial.print("value= ");
+//          Serial.println(value);
+//          Serial.print("POS =");
+//          Serial.println(POS);
           Flag = 1;
-          break;
+          //          break;
         }
       }
       if (Flag != 1)
       {
-        //        Serial.println("Flag not one");
+        Serial.println();
+        Serial.println("Flag not one");
         myList.add(ListSize, ListSize + 1);
         value = ListSize + 1;
         POS = ListSize;
@@ -124,6 +151,6 @@ int IR_ADD()
 
   else if (ListSize > 12)
   {
-        Serial.print("List Full");
+    Serial.print("List Full");
   }
 }

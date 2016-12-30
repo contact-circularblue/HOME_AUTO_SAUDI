@@ -17,8 +17,12 @@ void IR_DELETE(int IR_NUM)
     Serial.print("\t");
   }
   Serial.println();
-  Serial.println("List size=" + ListSize);
-  
+  Serial.print("myList.size()= ");
+  Serial.println(myList.size());
+
+  Serial.print("ListSize= ");
+  Serial.println(ListSize);
+
   for (int i = 0; i < ListSize; i++)
   {
     if (myList.get(i) == IR_NUM - 4);
