@@ -36,18 +36,18 @@ int IR_ADD()
       {
         myList.add(0, 1);
 
-        Serial.print("Entered this loop");
+        //        Serial.print("Entered this loop");
         EEPROM.write(985, myList.size());
-        Serial.print("There are ");
-        Serial.print(EEPROM.read(985));
-        Serial.print(" integers in the list.");
+        //        Serial.print("There are ");
+        //        Serial.print(EEPROM.read(985));
+        //        Serial.print(" integers in the list.");
 
         for (int h = 0; h < myList.size(); h++)
         {
           int val = myList.get(h);
           EEPROM.write(986 + h, val);
-          Serial.print(val);
-          Serial.print("\t");
+          //          Serial.print(val);
+          //          Serial.print("\t");
         }
         return 1;
       }
@@ -77,16 +77,16 @@ int IR_ADD()
       myList.add(0, 1);
       EEPROM.write(985, myList.size());
 
-      Serial.print("There are ");
-      Serial.print(EEPROM.read(985));
-      Serial.print(" integers in the list.");
+      //      Serial.print("There are ");
+      //      Serial.print(EEPROM.read(985));
+      //      Serial.print(" integers in the list.");
 
       for (int h = 0; h < myList.size(); h++)
       {
         int val = myList.get(h);
         EEPROM.write(986 + h, val);
-        Serial.print(val);
-        Serial.print("\t");
+        //        Serial.print(val);
+        //        Serial.print("\t");
       }
       return 1;
     }
@@ -115,7 +115,7 @@ int IR_ADD()
 
         if ((myList.get(i + 1) - myList.get(i)) > 1)
         {
-          Serial.print("going in if condition");
+          //          Serial.print("going in if condition");
           myList.add(i + 1, myList.get(i) + 1);
           value = myList.get(i) + 1;
           POS = i + 1;
@@ -131,8 +131,8 @@ int IR_ADD()
       }
       if (Flag != 1)
       {
-        Serial.println();
-        Serial.println("Flag not one");
+        //        Serial.println();
+        //        Serial.println("Flag not one");
         myList.add(ListSize, ListSize + 1);
         value = ListSize + 1;
         POS = ListSize;
