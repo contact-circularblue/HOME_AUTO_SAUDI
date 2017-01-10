@@ -20,6 +20,7 @@
  On['addIRDevice']      = "addIRDevice";
  On['Node_devices_IR']  = "Node_devices_IR";
  On['Node_power']       = "Node_power";
+ On['Node_IR_delete']   = "Node_IR_delete";
 
 
 
@@ -39,8 +40,8 @@ var Emit = {};
  Emit['addDevice']	     = "addDevice";
  Emit['Node_devices_IR'] = "Node_devices_IR";
  Emit['Node_power']      = "Node_power";
-
-
+ Emit['Node_IR_delete']  = "Node_IR_delete";
+ 
  exports.On   = On;
  exports.Emit = Emit;
 

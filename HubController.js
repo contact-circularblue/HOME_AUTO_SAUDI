@@ -36,8 +36,8 @@ module.exports = {
 
 	RemoveHub : function(Hub){
 		    Hubs.splice(Hubs.indexOf(Hub),1);
-		    console.log("Hub Removed : "); 
-		    console.log(Hub);
+		    console.log("Hub Removed"); 
+		    // console.log(Hub);
 	},
     RemoveDuplicates : function(uniqueID_,hub){
     	//console.log(Hubs);
@@ -62,5 +62,29 @@ module.exports = {
 		for (var i = 0; i < Hubs.length; i++) {
 			Hubs[i].sendHeartBeat();
 		}
+	},
+	GetDateTime : function(){
+
+	    var date = new Date();
+
+	    var hour = date.getHours();
+	    hour = (hour < 10 ? "0" : "") + hour;
+
+	    var min  = date.getMinutes();
+	    min = (min < 10 ? "0" : "") + min;
+
+	    var sec  = date.getSeconds();
+	    sec = (sec < 10 ? "0" : "") + sec;
+
+	    var year = date.getFullYear();
+
+	    var month = date.getMonth() + 1;
+	    month = (month < 10 ? "0" : "") + month;
+
+	    var day  = date.getDate();
+	    day = (day < 10 ? "0" : "") + day;
+
+	    return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+
 	}
 };

@@ -13,7 +13,7 @@ module.exports = function Node(id,type) {
 	this.addDevices = function(number){
 		for (var i = 1; i<=number ; i++) {
 			this.addDevice(new Device(i,"Default"));
-			console.log("Device Added : " + "Device " + i);
+			// console.log("Device Added : " + "Device " + i);
 		}
 	};
 	this.type = function(){
@@ -33,7 +33,7 @@ module.exports = function Node(id,type) {
 	};
 
 	this.addDevice = function(device){
-		
+
 		switch(device.type()){
 
 			case 'Default':
@@ -53,6 +53,15 @@ module.exports = function Node(id,type) {
 			}
 		}
 	};
+
+	// this.getPower =function(){
+	// 	   var response_obj = {};
+ //           response_obj['success'] = "true";
+ //           response_obj['nId'] = data.nodeId;
+ //           response_obj['dId'] = data.deviceId;
+ //           response_obj['dState'] = data.deviceState;
+ //           socket.Hub.emit(Events.Emit.Node_change,{ message: JSON.stringify(response_obj) });
+	// };
 	
 
 	// call class functions and variables

@@ -1,13 +1,15 @@
 var app = require('express')();
 var http = require('http').Server(app);
 // var io = require('socket.io')(http);//{'pingInterval': 40000, 'pingTimeout': 3600000}
-var io = require('socket.io')(http, {'pingInterval': 20000, 'pingTimeout': 60000});
-io.set('heartbeat timeout', 120000);
- // io.set('transports', ['xhr-polling', 'jsonp-polling']);
+var io = require('socket.io')(http, {'pingInterval': 2000, 'pingTimeout': 3600000});
+// io.set('heartbeat timeout', 120000);
+// io.set('transports', ['xhr-polling', 'jsonp-polling']);
 var readlineSync = require('readline-sync');
 var readline = require('readline');
 var typeOf = require('typeof');
 var net = require('net');
+var fs = require("fs")
+
 
 
 
@@ -28,6 +30,7 @@ Object.prototype.isEmpty = function() {
     }
     return true;
 }
+
 
 var stdin = process.openStdin();
 stdin.setEncoding( 'utf8' );
@@ -52,10 +55,11 @@ stdin.on('data', function(chunk) {
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
           io.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
-  }else{
+  }else if(chunk.toString().trim() ==='power') {
+
+  } else{
     console.log("command not found")
   }
-
 
  });
 
@@ -69,7 +73,17 @@ app.get('/', function(req, res){
 //     HubController.UpdateDevices();
 //   }, 60000);
 
+
+io.on('ping',function(data){
+  console.log('ping  ' + data );
+});
+io.on('pong',function(data){
+  console.log('pong  ' + data );
+});
+
 io.on('connection', function(socket){
+
+
   
   connections.push(socket);
   console.log('connected %s sockets connected', connections.length);
@@ -84,15 +98,14 @@ io.on('connection', function(socket){
   var NewObject = {};
   NewObject['success'] = "true";
   NewObject['message'] = "connected";
-
         
   socket.emit(Events.Emit.ack ,{ message: JSON.stringify(NewObject) } );
  // socket.emit(Events.Emit.ack ,JSON.stringify(NewObject));
 
   console.log("socket ID : " + socketId);
   console.log("Client IP : " + clientIp);
-  // console.log("username  : " + socket.username); 
-  socket.on("packet", function(type, data) {
+
+    socket.on("packet", function(type, data) {
     console.log("received ping");
 });
 
@@ -100,28 +113,33 @@ socket.on("packetCreate", function(type, data) {
     console.log("sending pong");
 });
 
+socket.on('ping',function(data){
+  console.log('ping  ' + data );
+});
+socket.on('pong',function(data){
+  console.log('pong  ' + data );
+});
 
   socket.on(Events.On.add_Node,function(data){
-    if(data=="addNode"){
-       var response_obj = {};
+
+    switch(socket.DeviceType){
+
+      case DeviceType.Mobile:
+      console.log("Mobile : ");
+      console.log(data);
+        var response_obj = {};
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
           socket.Hub.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
-    }else{
-       console.log(data);
-        // nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type(),'devices':devices });
-
+        break;
+      case DeviceType.Hub:
+      console.log("Hub :");
+        console.log(data);
        var node = socket.Hub.addNode(data.nodeId,data.type);
-       var devices = []; 
-
-       for (var i = 0; i < node.Devices.length; i++) {
-         devices.push({'id':node.Devices[i].id(),'state':node.Devices[i].currentState()});
-       }
-       socket.Hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type(),'devices':devices},Events.Emit.add_Node);
+       socket.Hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type()},Events.Emit.add_Node);
+        break;
     }
-    console.log("add node ");
-  
-   // socket.Hub.addNode(data.message,'4');
+    console.log("add node ");  
   });
 
   socket.on(Events.On.Node_info,function(data){
@@ -173,6 +191,10 @@ socket.on("packetCreate", function(type, data) {
         // socket.setTimeout(0);
         // socket.setKeepAlive(true,60000); //1 min = 60000 milliseconds.
         // socket.emit('check_alive','There?');
+        setTimeout(function() {
+            socket.emit(Events.On.dummy,"data");
+          // HubController.UpdateDevices();
+        }, 3000);
 
         break;
 
@@ -297,16 +319,9 @@ socket.on("packetCreate", function(type, data) {
    socket.on(Events.On.Node_all,function(data){
         var nodes = []; 
         for (var i = 0; i < socket.Hub.Nodes.length; i++) {
-            var devices = [];
-            for (var j = 0; j < socket.Hub.Nodes[i].Devices.length; j++) {
-               console.log("device id " + socket.Hub.Nodes[i].Devices[j].id());
-               console.log("current State " + socket.Hub.Nodes[i].Devices[j].currentState());
-               devices.push({'id':socket.Hub.Nodes[i].Devices[j].id(),'state':socket.Hub.Nodes[i].Devices[j].currentState()});
-            }
-            nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type(),'devices':devices });
+            nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type()});
         }
-         // console.log(nodes);
-         socket.emit(Events.Emit.Node_all,nodes);
+        socket.emit(Events.Emit.Node_all,nodes);
    });
 
    socket.on(Events.On.Node_devices_IR,function(data){
@@ -335,7 +350,6 @@ socket.on("packetCreate", function(type, data) {
           console.log(devices);
           socket.emit(Events.Emit.Node_devices,devices);
    });
-
   socket.on(Events.On.Node_power,function(data){
 
         console.log("NODE POWER");
@@ -348,7 +362,7 @@ socket.on("packetCreate", function(type, data) {
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
 
-              socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
+              socket.Hub.emit(Events.Emit.Node_power,{ message: JSON.stringify(response_obj) });
           break;
           case DeviceType.Hub:
             console.log("Hub : ");
@@ -361,10 +375,41 @@ socket.on("packetCreate", function(type, data) {
             var node = socket.Hub.getNode(data.nId);
           //  node.addDevice(new Device(data.dId,"IR"));
 
-            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
+            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_power);
           break;
         }
    });
+
+  socket.on(Events.On.Node_IR_delete,function(data){
+
+        // console.log("NODE POWER");
+        // console.log(data);
+        switch(socket.DeviceType){
+          case DeviceType.Mobile:
+            console.log("Mobile : ");
+            console.log(data);
+              var response_obj        = {};
+              response_obj['success'] = "true";
+              response_obj['nId']     = data.nodeId;
+              response_obj['dId']     = data.deviceId;
+
+              socket.Hub.emit(Events.Emit.Node_IR_delete,{ message: JSON.stringify(response_obj) });
+          break;
+          case DeviceType.Hub:
+            console.log("Hub : ");
+            console.log(data);
+//            { nId: '4234567890', success: 'true', dId: '11' }
+            var response_obj = {};
+            response_obj['nodeId']   = data.nId;
+            response_obj['power']    = data.power;     
+
+            var node = socket.Hub.getNode(data.nId);
+          //  node.addDevice(new Device(data.dId,"IR"));
+
+           // socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_IR_delete);
+          break;
+        }
+  });
 
 
 
@@ -406,7 +451,7 @@ socket.on("packetCreate", function(type, data) {
             console.log('CHECK ALIVE : ' + Hub.uniqueID());
             if(!Hub.isAlive()){
               console.log("Hub is Dead : " + Hub.uniqueID())
-
+               HubController.RemoveHub(Hub);
             }else{
               console.log("Hub is Alive : " + Hub.uniqueID());
             }
@@ -416,7 +461,8 @@ socket.on("packetCreate", function(type, data) {
         }else{
 
         }
-
+        console.log("TIME : " + socket.Hub.getDateTime());
+        // socket.Hub.getDateTime();
             break;
         case DeviceType.Mobile:
 
@@ -429,13 +475,19 @@ socket.on("packetCreate", function(type, data) {
           console.log("ping timeout for Mobile");
         }
 
-            break;
+        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
+        socket.Hub.MobileDevices.splice(socket,1);
+        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
+                console.log("TIME : " + socket.Hub.getDateTime());
+
+        break;
     }
     connections.splice(connections.indexOf(socket),1);
 		console.log('Disconnected %s sockets connected',connections.length);
 	});
 
 });
+
 
 http.listen(3000, function(){
 

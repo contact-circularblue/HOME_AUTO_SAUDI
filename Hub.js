@@ -28,7 +28,9 @@ module.exports = function Hub(uniqueID,socket){
 	};
 
 	this.addMobileDevice = function(mobileDevice){
-		this.MobileDevices.push(mobileDevice);
+		if(!this.mobileDeviceExits(mobileDevice.id)){
+				this.MobileDevices.push(mobileDevice);		
+		}
 		return 1;
 	};
 
@@ -39,6 +41,14 @@ module.exports = function Hub(uniqueID,socket){
 	this.mobileDeviceCount = function(){
 		return this.MobileDevices.length;
 	};
+	this.mobileDeviceExits =function(socketId){
+	    var output = this.MobileDevices.filter(function(item){  return item.id == socketId; });
+	    if(output.isEmpty())
+	    {
+	          return false;
+	    }
+	    return true;
+	}
 
 	this.uniqueID = function(){
 		return this.uniqueID_;
@@ -74,17 +84,17 @@ module.exports = function Hub(uniqueID,socket){
 	}; 
 
 	this.broadCastToMobieDevices = function(data,event){
-
-		console.log("MobileDevices length" + this.MobileDevices.length);
-
+		console.log("BroadCast To Mobie Devices");
+		// console.log("MobileDevices length" + this.MobileDevices.length);
 		for (var i = 0; i < this.MobileDevices.length; i++){
-			console.log(this.MobileDevices[i].id);
+			// console.log(this.MobileDevices[i].id);
 			this.MobileDevices[i].emit(event,data);
 		}
 	};
 	this.emit = function(event,message){
 
-	       console.log("SOCKET ID : " + socket.id);		  
+	       console.log("SOCKET ID : " + socket.id);	
+	       console.log(message);	  
 		    socket.emit(event,message);
 	};
 
@@ -106,7 +116,30 @@ module.exports = function Hub(uniqueID,socket){
 		  //  socket.emit(Events.On.dummy,'hi');
 		    socket.send('hi');    
 	};
+	this.getDateTime = function(){
 
+	    var date = new Date();
+
+	    var hour = date.getHours();
+	    hour = (hour < 10 ? "0" : "") + hour;
+
+	    var min  = date.getMinutes();
+	    min = (min < 10 ? "0" : "") + min;
+
+	    var sec  = date.getSeconds();
+	    sec = (sec < 10 ? "0" : "") + sec;
+
+	    var year = date.getFullYear();
+
+	    var month = date.getMonth() + 1;
+	    month = (month < 10 ? "0" : "") + month;
+
+	    var day  = date.getDate();
+	    day = (day < 10 ? "0" : "") + day;
+
+	    return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+
+	};
 }
 
 

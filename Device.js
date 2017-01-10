@@ -31,7 +31,7 @@ module.exports = function Device(id,type){
 	};
 	this.setCurrentState = function(state){
 		this.curentState_ = state;
-		console.log("DeviceState : " + this.curentState_);
+		// console.log("DeviceState : " + this.curentState_);
 	}; 
 
 	this.type = function(){
