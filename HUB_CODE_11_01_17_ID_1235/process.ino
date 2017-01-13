@@ -46,6 +46,7 @@ void process()
 
 
       WiFi.disconnect();
+      status_LEDs(0);
       delay(1000);
 
       while (WiFi.status() == WL_CONNECTED);
@@ -59,12 +60,14 @@ void process()
 
       if (WiFi.status() == WL_CONNECTED)
       {
+        status_LEDs(1);
         //Serial.println("wifi connected");
 
         while (!connect_to_server());
 
 
         while (!connect_socket());
+        status_LEDs(2);
 
         delay(100);
 
@@ -74,6 +77,7 @@ void process()
 
         //        Serial.println("client monitoring complete");
         add_hub();
+        status_LEDs(3);
 
         //        Serial.println("hub add complete");
 
@@ -81,12 +85,21 @@ void process()
         Serial.print("Sending ACK\n");
         client.send("wifi_details_rec", "message", "success");
 
+        // Send WiFi details to the other ESP
+        Serial.print("details:");
+        Serial.print(ssid);
+        Serial.print("hub_pass:");
+        Serial.print(password);
+        Serial.print("::::end");
+        
+
         delay(100);
 
       }
     }
     else if (RID == "add_Node")
     {
+      status_LEDs(4);
       Serial.println("Adding Node");
       delay(10);
 
@@ -97,6 +110,7 @@ void process()
 
 
       delay(3000);
+      status_LEDs(5);
     }
 
 

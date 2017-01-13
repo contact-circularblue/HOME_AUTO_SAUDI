@@ -24,8 +24,8 @@ SocketIOClient client;
 char* ssid     = "Circular Blue";
 char* password = "mightycartoon";
 
-char host[] = "104.131.44.88";
-//char host[] = "192.168.1.143";
+//char host[] = "104.131.44.88";
+char host[] = "192.168.1.143";
 int port = 3000;
 
 extern bool socket_connected;
@@ -65,23 +65,6 @@ String json_add_hub = "";
 String json_add_node = "";
 void setup() {
 
-/*
- * 4->RED
- * 2->BLUE 
- * 12->GREEN
- * 14->YELLOW
- */
-
-  pinMode(4, OUTPUT);
-  pinMode(2, OUTPUT);
-  pinMode(14, OUTPUT);
-  pinMode(12, OUTPUT);
-
-  digitalWrite(4, HIGH);
-  digitalWrite(2, HIGH);
-  digitalWrite(14, HIGH);
-  digitalWrite(12, HIGH);
-
   String node_Id = "4234567890";
 
   JsonObject& root_add_node = jsonBuffer.createObject();
@@ -107,12 +90,10 @@ void setup() {
 
   // We start by connecting to a WiFi network
   while (!connect_wifi());
-  
 
 
 
   while (!connect_to_server());
-  
 
 
   while (!connect_socket());

@@ -65,22 +65,19 @@ String json_add_hub = "";
 String json_add_node = "";
 void setup() {
 
-/*
- * 4->RED
- * 2->BLUE 
- * 12->GREEN
- * 14->YELLOW
- */
+  /*
+     4->RED
+     2->BLUE
+     12->GREEN
+     14->YELLOW
+  */
 
   pinMode(4, OUTPUT);
   pinMode(2, OUTPUT);
   pinMode(14, OUTPUT);
   pinMode(12, OUTPUT);
 
-  digitalWrite(4, HIGH);
-  digitalWrite(2, HIGH);
-  digitalWrite(14, HIGH);
-  digitalWrite(12, HIGH);
+  status_LEDs(0);
 
   String node_Id = "4234567890";
 
@@ -96,7 +93,7 @@ void setup() {
   } DeviceType;
 
   root_hub_add["deviceType"] = DeviceType.Hub;
-  root_hub_add["uniqueID"] = "1234";
+  root_hub_add["uniqueID"] = "1235";
 
 
   //    Serial.print("printing to string");
@@ -107,15 +104,16 @@ void setup() {
 
   // We start by connecting to a WiFi network
   while (!connect_wifi());
-  
+  status_LEDs(1);
 
 
 
   while (!connect_to_server());
-  
+  status_LEDs(2);
 
 
   while (!connect_socket());
+
   // Serial.println("SOCKET CONNECTED NOW");
   //client.send("connection", "message", "Connected !!!!");
 
@@ -125,6 +123,7 @@ void setup() {
 
 
   add_hub();
+  status_LEDs(3);
 
   client.monitor();
 
@@ -140,7 +139,56 @@ void loop()
   //client.send("wifi", "message", "success");
   delay(10);
 
+if(WiFi.status() != WL_CONNECTED) // IF WiFi disconnects, Reconnect WiFi
+{
+  while (!connect_wifi());
+  status_LEDs(1);
 
+
+
+  while (!connect_to_server());
+  status_LEDs(2);
+
+
+  while (!connect_socket());
+
+  // Serial.println("SOCKET CONNECTED NOW");
+  //client.send("connection", "message", "Connected !!!!");
+
+  delay(100);
+  monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+
+
+  add_hub();
+  status_LEDs(3);
+
+  client.monitor();  
+}
+
+
+if (flag == 1) // IF server disconnects, Reconnect to Server
+  {
+    status_LEDs(1);
+    while (!connect_to_server());
+    status_LEDs(2);
+
+
+    while (!connect_socket());
+    // Serial.println("SOCKET CONNECTED NOW");
+    //client.send("connection", "message", "Connected !!!!");
+
+    delay(100);
+    monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+    add_hub();
+    status_LEDs(3);
+    client.monitor();
+
+    flag = 0;
+  }
+
+  
 
   if (monitor_client())
   {
@@ -170,25 +218,6 @@ void loop()
 
 
   unsigned long currentMillis = millis();
-
-  if (flag == 1)
-  {
-    while (!connect_to_server());
-
-
-    while (!connect_socket());
-    // Serial.println("SOCKET CONNECTED NOW");
-    //client.send("connection", "message", "Connected !!!!");
-
-    delay(100);
-    monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
-
-    add_hub();
-
-    client.monitor();
-
-    flag = 0;
-  }
 
 
   if (currentMillis - previousMillis >= interval)
