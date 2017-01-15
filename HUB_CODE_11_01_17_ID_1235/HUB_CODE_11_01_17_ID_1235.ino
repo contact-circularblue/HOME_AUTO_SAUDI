@@ -58,7 +58,7 @@ bool hub_connected = false;
 unsigned long previousMillis = 0;        // will store last time LED was updated
 
 // constants won't change :
-const long interval = 900000;           // interval at which to send dummy packet
+const long interval = 60000;           // interval at which to send dummy packet
 
 
 String json_add_hub = "";
