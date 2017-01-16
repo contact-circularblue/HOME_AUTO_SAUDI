@@ -37,12 +37,11 @@ void setup() {
   //  EEPROM.commit();
 
 
-  Serial.print("                                                                                                                                     EEPROM.read(200)=");
+  Serial.print("EEPROM.read(200)=");
   Serial.println(EEPROM.read(200));
-  
+
   if (EEPROM.read(200) == 1)
   {
-
     Serial.println("flag=1");
     while (!connectWifi())
       delay(100);
@@ -220,7 +219,7 @@ void loop() {
         {
           //ID += WiFi_info.charAt(i);
           ssid_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid                                                                                                                                                                     
+          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid
           delay(100);
           EEPROM.commit();
           k++;
@@ -251,7 +250,7 @@ void loop() {
         delay(100);
         EEPROM.commit();
 
-        
+
         Serial.print("PASSWORD in EEPROM");
 
 
@@ -266,7 +265,7 @@ void loop() {
         EEPROM.commit();
         Serial.println("EEPROM Edited");
 
-        
+
 
         // Save this ID and password to EEPROM
         /*
