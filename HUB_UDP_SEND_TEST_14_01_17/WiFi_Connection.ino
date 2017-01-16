@@ -6,13 +6,13 @@ boolean connectWifi()
 
   Serial.print("Connecting to ");
 
-  for (int i = 1; i < ssid_length + 1; i++)
+  for (int i = 1; i < EEPROM.read(0) + 1; i++)
   {
     ssid_2[i - 1] = EEPROM.read(i);
     //delay(10);
   }
 
-  for (int i = 51, j = 0; i < 51 + password_length; i++, j++)
+  for (int i = 51, j = 0; i < 51 + EEPROM.read(50); i++, j++)
   {
     password_2[j] = EEPROM.read(i);
     //delay(10);

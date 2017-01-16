@@ -29,26 +29,20 @@ void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
 
-  ESP.eraseConfig();
-
-  Serial.println("here");
-  //  EEPROM.write(200, 1);
-  //  delay(100);
-  //  EEPROM.commit();
-
-
-  Serial.print("                                                                                                                                     EEPROM.read(200)=");
-  Serial.println(EEPROM.read(200));
+//  ESP.eraseConfig();
+//
+//  Serial.println("here");
+//
+//  Serial.print("EEPROM.read(200)=");
+//  Serial.println(EEPROM.read(200));
   
   if (EEPROM.read(200) == 1)
   {
-
     Serial.println("flag=1");
     while (!connectWifi())
       delay(100);
 
     wifiConnected = 1;
-    //wifiConnected = 0;
 
     // only proceed if wifi connection successful
 
@@ -62,7 +56,6 @@ void setup() {
     }
 
     Serial.println("done");
-
   }
 
   //  // Initialise wifi connection

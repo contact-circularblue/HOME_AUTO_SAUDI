@@ -7,11 +7,11 @@ boolean connectWifi()
   int i = 0;
 
   Serial.print("Connecting to ");
-  //delay(500);
+  //+delay(500);
   for (int i = 1; i < EEPROM.read(0) + 1; i++)
   {
-   
-    char a= EEPROM.read(i);
+
+    char a = EEPROM.read(i);
     //Serial.print(a);
     ssid_2[i - 1] = a;
     //delay(500);
@@ -21,11 +21,11 @@ boolean connectWifi()
 
   for (int i = 51, j = 0; i < 51 + EEPROM.read(50); i++, j++)
   {
-    //Serial.print("In This Loop");
+
     password_2[j] = EEPROM.read(i);
     //delay(500);
     //Serial.print(EEPROM.read(i));
-    
+
     //delay(10);
   }
 

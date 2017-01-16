@@ -8,13 +8,13 @@
 
 char ssid_1[25] = "";
 char password_1[25] = "";
-int ssid_length=0;
-int password_length=0;
+int ssid_length = 0;
+int password_length = 0;
 
 boolean wifiConnected = false;
 int counter = 1;
 
- 
+
 
 // UDP variables
 unsigned int localPort = 80;
@@ -177,7 +177,7 @@ void loop() {
       //   int flag=0;
       int index = WiFi_info.indexOf("details:");
       if (index > -1)
-      {     
+      {
         String ID = "";
         int k = 1;
         for (int i = index + 8, j = 0; i < WiFi_info.indexOf(":pass:"); i++, j++)
@@ -191,7 +191,7 @@ void loop() {
           Serial.println(char(EEPROM.read(j + 1)));
         }
         EEPROM.write(0, k - 1); // saving the length of ssid
-        ssid_length=EEPROM.read(0);  // saving the length of ssid
+        ssid_length = EEPROM.read(0); // saving the length of ssid
         delay(100);
         EEPROM.commit();
 
@@ -209,17 +209,17 @@ void loop() {
           Serial.println(char(EEPROM.read(51 + j)));
         }
         EEPROM.write(50, l); // saving the length of password
-        password_length=l;      // saving the length of password
+        password_length = l;    // saving the length of password
         delay(100);
         EEPROM.commit();
 
 
         Serial.println("SSID length");
         Serial.println(EEPROM.read(0));
-       
+
         Serial.println("password length");
         Serial.println(EEPROM.read(50));
-       
+
         // Save this ID and password to EEPROM
         /*
           location 0=ID length;  from location 1=ID;  location 50=pass length;   from location 51=pass
