@@ -146,15 +146,25 @@ void loop() {
           {
             to_nodes += char(Serial.read());
 
-            //            Serial.print("to_nodes= ");
-            //            Serial.println(to_nodes);
+//                        Serial.print("to_nodes= ");
+//                        Serial.println(to_nodes);
 
             delay(10);
           }
 
+          if(to_nodes.indexOf("RESET_ESP")!=-1)
+          {
+            EEPROM.write(200,0);
+            delay(100);
+            EEPROM.commit();
+            delay(100);
+            Serial.println("RESETTING");
+            ESP.reset();
+          }
+
           char char_to_nodes[25];
 
-          while (1)
+          for(int i=0;i<5;i++)
           {
 
             UDP.beginPacket("192.168.1.255", 80);

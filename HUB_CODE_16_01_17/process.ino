@@ -41,8 +41,32 @@ void process()
       //Serial.println("DISCONNECTED");
 
       delay(3000);
+      
+      for (int i = 0; i < 3; i++)
+      {
 
-      while (!connect_wifi());
+        WiFi.begin(ssid, password);
+        int j = 0;
+        while (WiFi.status() != WL_CONNECTED) {
+          delay(500);
+          Serial.print(".");
+
+          if (j > 20) {
+            break;
+          }
+          j++;
+        }
+        if (WiFi.status() == WL_CONNECTED)
+          break;
+        else if (i == 2)
+        {
+          Serial.print("HUB UNABLE TO CONNECT");
+          while (1)
+          {
+            delay(100);
+          }
+        }
+      }
 
       EEPROM.write(200, 1); // flag to indicate wifi connction successful
       delay(100);
@@ -78,6 +102,13 @@ void process()
         delay(100);
         Serial.print("Sending ACK\n");
         client.send("wifi_details_rec", "message", "success");
+
+        // Send WiFi details to the other ESP
+        Serial.print("details:");
+        Serial.print(ssid);
+        Serial.print("hub_pass:");
+        Serial.print(password);
+        Serial.print("::::end");
 
         delay(100);
 

@@ -101,7 +101,9 @@ void setup() {
   Serial.begin(9600);
   delay(10);
   EEPROM.begin(512);
-
+//
+//EEPROM.write(200,0);
+//EEPROM.commit();
 
   if (EEPROM.read(200) == 1)
   {
