@@ -14,8 +14,6 @@ int password_length = 0;
 boolean wifiConnected = false;
 int counter = 1;
 
-
-
 // UDP variables
 unsigned int localPort = 80;
 WiFiUDP UDP;

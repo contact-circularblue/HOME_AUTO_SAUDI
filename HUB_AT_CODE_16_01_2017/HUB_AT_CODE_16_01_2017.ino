@@ -80,63 +80,83 @@ void loop() {
     {
       Serial.println("NODE ADDITON");
       node_add.listen();
-      
+
       String node_ID = "";
-      for (int i = 0; i < 10; i++)
+      for (int i = 0; i < 30; i++)
       {
         node_add.print("node_add");
-        delay(100);
-        if (node_add.find("ID:"))
-      {
-        while (node_add.available())
+        delay(200);
+        //        while(1)
+        //        {
+        //          if(node_add.available())
+        //          ESP_hub.print(char(node_add.read()));
+        //        }
+        String temp_str = "";
+        if (node_add.available())
+        {
+          while (node_add.available())
           {
-            node_ID += char(node_add.read());
+            temp_str += char(node_add.read());
             delay(10);
           }
-
-          int ssid_length = EEPROM.read(0);
-          int pass_length = EEPROM.read(50);
-
-          node_add.print("SSID:");
-          for (int i = 0; i < ssid_length; i++)
-            node_add.print(char(EEPROM.read(i + 1)));
-
-          int ok_1 = 1;
-          for (int i = 0; i < 10; i++)
+          if (temp_str.indexOf("ID:") != -1)
           {
-            if (node_add.find("OK"))
-              break;
-            delay(50);
-            if (i == 9)
-              ok_1 = 0;
-          }
+            //ESP_hub.print("FOUND ID");
+            int index = temp_str.indexOf("ID:");
+            //while (node_add.available())
+            {
+              node_ID = temp_str.substring(index+3);
+              //node_ID += char(node_add.read());
+              //            ESP_hub.print(char(node_add.read()));
+              //delay(50);
+            }
+            //ESP_hub.print("ID:4234567890");
 
-          if (ok_1 == 1)
-          {
-            node_add.print("::PASSWORD::");
-            for (int i = 50; i < pass_length + 50; i++)
+            int ssid_length = EEPROM.read(0);
+            int pass_length = EEPROM.read(50);
+
+            node_add.print("SSID:");
+            for (int i = 0; i < ssid_length; i++)
               node_add.print(char(EEPROM.read(i + 1)));
-          }
 
-          int ok_2 = 1;
-          for (int i = 0; i < 10; i++)
-          {
-            if (node_add.find("OK"))
+            int ok_1 = 1;
+            for (int i = 0; i < 10; i++)
+            {
+              if (node_add.find("OK"))
+                break;
+              delay(50);
+              if (i == 9)
+                ok_1 = 0;
+            }
+
+            if (ok_1 == 1)
+            {
+              node_add.print("::PASSWORD::");
+              for (int i = 50; i < pass_length + 50; i++)
+                node_add.print(char(EEPROM.read(i + 1)));
+            }
+
+            int ok_2 = 1;
+            for (int i = 0; i < 10; i++)
+            {
+              if (node_add.find("OK"))
+                break;
+              delay(50);
+              if (i == 9)
+                ok_2 = 0;
+            }
+
+            if (ok_2 == 1)
+            {
+              ESP_hub.print("ID:");
+              ESP_hub.print(node_ID);
               break;
-            delay(50);
-            if (i == 9)
-              ok_2 = 0;
-          }
+            }
 
-          if (ok_2 == 1)
-          {
-            ESP_hub.print("ID:");
-            ESP_hub.print(node_ID);
-            break;
           }
-
+         
         }
-        delay(1000);
+         delay(1000);
       }
       ESP_hub.listen();
     }

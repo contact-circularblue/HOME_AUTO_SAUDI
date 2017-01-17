@@ -118,24 +118,35 @@ void process()
     {
       status_LEDs(4);
       Serial.println("node_add:");
+      delay(4000);
 
-
-      for (int i = 0; i < 20; i++)
+      String ID = "";
       {
-        if (Serial.find("ID:"))
-      {
-        String ID = "";
-        while (Serial.available())
+        ID = "";
+        if (Serial.available())
+        {
+          while (Serial.available())
           {
             ID += char(Serial.read());
             delay(10);
           }
+          Serial.println("ID_STRING= " + ID);
+        }
+      }
+
+      for (int i = 0; i < 50; i++)
+      {
+        if (ID.indexOf("ID:") != -1)
+        {
+
+          String node_ID = ID.substring(ID.indexOf("ID:") + 3);
+          json_add_node = "";
 
           //String node_Id = "4234567890";
 
           JsonObject& root_add_node = jsonBuffer.createObject();
-          root_add_node["nodeId"] = ID;
-          root_add_node["type"] = String(ID[0]);
+          root_add_node["nodeId"] = node_ID;
+          root_add_node["type"] = String(node_ID[0]);
 
           root_add_node.printTo(json_add_node);
 
@@ -143,7 +154,10 @@ void process()
           Serial.println(json_add_node);
           client.sendJSON("add_Node", json_add_node);
           Serial.print("JSON sent");
+          break;
         }
+
+        delay(200);
 
       }
       status_LEDs(5);
