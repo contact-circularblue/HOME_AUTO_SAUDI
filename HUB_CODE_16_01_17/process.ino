@@ -41,7 +41,7 @@ void process()
       //Serial.println("DISCONNECTED");
 
       delay(3000);
-      
+
       for (int i = 0; i < 3; i++)
       {
 
@@ -117,16 +117,35 @@ void process()
     else if (RID == "add_Node")
     {
       status_LEDs(4);
-      Serial.println("Adding Node");
-      delay(10);
-
-      Serial.print("Sending json= ");
-      Serial.println(json_add_node);
-      client.sendJSON("add_Node", json_add_node);
-      Serial.print("JSON sent");
+      Serial.println("node_add:");
 
 
-      delay(3000);
+      for (int i = 0; i < 20; i++)
+      {
+        if (Serial.find("ID:"))
+      {
+        String ID = "";
+        while (Serial.available())
+          {
+            ID += char(Serial.read());
+            delay(10);
+          }
+
+          //String node_Id = "4234567890";
+
+          JsonObject& root_add_node = jsonBuffer.createObject();
+          root_add_node["nodeId"] = ID;
+          root_add_node["type"] = String(ID[0]);
+
+          root_add_node.printTo(json_add_node);
+
+          Serial.print("Sending json= ");
+          Serial.println(json_add_node);
+          client.sendJSON("add_Node", json_add_node);
+          Serial.print("JSON sent");
+        }
+
+      }
       status_LEDs(5);
     }
 

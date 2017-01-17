@@ -2,12 +2,14 @@
 #include<EEPROM.h>
 
 SoftwareSerial ESP_hub(10, 11);
+SoftwareSerial node_add(8, 9);
 const byte interruptPin = 2;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   ESP_hub.begin(9600);
+  node_add.begin(9600);
   pinMode(interruptPin, INPUT);
   attachInterrupt(digitalPinToInterrupt(interruptPin), Send_Reset, RISING);  // for sending reset to both ESP's
   //Serial.print("STARTING");
@@ -15,6 +17,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  ESP_hub.listen();
   if (ESP_hub.available())
   {
     String input = "";
@@ -60,7 +63,7 @@ void loop() {
 
       for (int i = 51; i < pass.length() + 51; i++)
       {
-        EEPROM.write(i, ID.charAt(i - 51));
+        EEPROM.write(i, pass.charAt(i - 51));
       }
 
 
@@ -70,6 +73,72 @@ void loop() {
       Serial.print(":pass:");
       Serial.print(pass);
 
+    }
+
+    index = input.indexOf("node_add:");
+    if (index > -1)
+    {
+      Serial.println("NODE ADDITON");
+      node_add.listen();
+      
+      String node_ID = "";
+      for (int i = 0; i < 10; i++)
+      {
+        node_add.print("node_add");
+        delay(100);
+        if (node_add.find("ID:"))
+      {
+        while (node_add.available())
+          {
+            node_ID += char(node_add.read());
+            delay(10);
+          }
+
+          int ssid_length = EEPROM.read(0);
+          int pass_length = EEPROM.read(50);
+
+          node_add.print("SSID:");
+          for (int i = 0; i < ssid_length; i++)
+            node_add.print(char(EEPROM.read(i + 1)));
+
+          int ok_1 = 1;
+          for (int i = 0; i < 10; i++)
+          {
+            if (node_add.find("OK"))
+              break;
+            delay(50);
+            if (i == 9)
+              ok_1 = 0;
+          }
+
+          if (ok_1 == 1)
+          {
+            node_add.print("::PASSWORD::");
+            for (int i = 50; i < pass_length + 50; i++)
+              node_add.print(char(EEPROM.read(i + 1)));
+          }
+
+          int ok_2 = 1;
+          for (int i = 0; i < 10; i++)
+          {
+            if (node_add.find("OK"))
+              break;
+            delay(50);
+            if (i == 9)
+              ok_2 = 0;
+          }
+
+          if (ok_2 == 1)
+          {
+            ESP_hub.print("ID:");
+            ESP_hub.print(node_ID);
+            break;
+          }
+
+        }
+        delay(1000);
+      }
+      ESP_hub.listen();
     }
   }
 

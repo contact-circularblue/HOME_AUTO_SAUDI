@@ -78,13 +78,7 @@ void setup() {
 
   status_LEDs(0);
 
-  String node_Id = "4234567890";
-
-  JsonObject& root_add_node = jsonBuffer.createObject();
-  root_add_node["nodeId"] = node_Id;
-  root_add_node["type"] = String(node_Id[0]);
-
-  root_add_node.printTo(json_add_node);
+  
 
   JsonObject& root_hub_add = jsonBuffer.createObject();
   struct DeviceType_ {
