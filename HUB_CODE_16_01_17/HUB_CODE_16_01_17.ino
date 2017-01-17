@@ -230,7 +230,7 @@ void loop()
       String from_node = "";
       int index = Buffer.indexOf("jackhammer,");
 
-      from_node = Buffer.substring(index + 10);
+      from_node = Buffer.substring(index + 11);
 
 
       //        //      while (Serial.available())

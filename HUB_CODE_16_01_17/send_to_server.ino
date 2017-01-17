@@ -17,27 +17,29 @@ void send_to_server(String in)
 
   if (temp0.toInt() == 0)
   {
-    if (temp2.toInt()<=5) // for 6 switch node
+    if (temp2.toInt() <= 5) // for 6 switch node
     {
       root2["dId"] = temp2;
       if (temp3.toInt() == 1)
         root2["dState"] = String("true");
       else if (temp3.toInt() == 0)
         root2["dState"] = String("false");
-      
-        
+
+
       String json2 = "";
       root2.printTo(json2);
       //    Serial.print("Sending json= "  + json2);
 
       client.sendJSON("Node_change", json2);
     }
-    else if (temp2.toInt()==30)
+    else if (temp2.toInt() == 30)
     {
       root2["power"] = String(temp4);
       String json2 = "";
       root2.printTo(json2);
       client.sendJSON("Node_power", json2);
+      Serial.println();
+      Serial.print("json2= " + json2);
     }
     Serial.print("json sent");
   }
