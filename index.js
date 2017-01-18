@@ -301,14 +301,23 @@ socket.on('pong',function(data){
           case DeviceType.Hub:
             console.log("Hub : ");
             console.log(data);
-//            { nId: '4234567890', success: 'true', dId: '11' }
+
             var response_obj = {};
             response_obj['nodeId']      = data.nId;
             response_obj['deviceId']    = data.dId;
             response_obj['deviceState'] = "true"; 
-            response_obj['success']     = data.success ;      
+            response_obj['success']     = data.success ;
+
+
 
             var node = socket.Hub.getNode(data.nId);
+
+            console.log("______________________________HUB =");
+            console.log(socket.Hub);
+
+            console.log("______________________________NODE = ");
+            console.log(node);
+
             node.addDevice(new Device(data.dId,"IR"));
 
             socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);

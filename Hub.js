@@ -101,6 +101,7 @@ module.exports = function Hub(uniqueID,socket){
 	this.getNode =function(nodeId){
 		for (var i = 0; i < this.Nodes.length; i++) {
 			if(this.Nodes[i].id() == nodeId){
+				console.log("NODE FOUND");
 				return this.Nodes[i];
 			}
 		}
