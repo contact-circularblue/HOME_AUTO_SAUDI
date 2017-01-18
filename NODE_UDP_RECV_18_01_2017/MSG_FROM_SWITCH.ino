@@ -17,7 +17,59 @@ void Msg_from_switch()
     //
     //    Serial.println(data_from_switch.charAt(0));
 
-    if (data_from_switch.charAt(0) >= '0' && data_from_switch.charAt(0) <= '9')
+    int index = data_from_switch.indexOf("SSID:");
+    if (index > -1)
+    {
+      String ID = "";
+      int k = 0;
+      for (int i = index + 5, j = 0; i < data_from_switch.indexOf("::password::"); i++, j++)
+      {
+        //ID += data_from_switch.charAt(i);
+        ssid_1[j] = data_from_switch.charAt(i);
+        EEPROM.write(j + 1, ssid_1[j]); // saving the ssid
+        delay(10);
+        EEPROM.commit();
+        k++;
+        Serial.println(char(EEPROM.read(j + 1)));
+      }
+      EEPROM.write(0, k); // saving the length of ssid
+      ssid_length = EEPROM.read(0); // saving the length of ssid
+      delay(10);
+      EEPROM.commit();
+
+      Serial.print("SSID in EEPROM");
+
+      String pass = "";
+      int len = 0;
+      for (int i = data_from_switch.indexOf("::password::") + 12, j = 0; i < data_from_switch.indexOf(":::END:::"); i++, j++)
+      {
+        password_1[j] = data_from_switch.charAt(i);
+        EEPROM.write(51 + j, password_1[j]); // saving the password
+        delay(10);
+        EEPROM.commit();
+        len++;
+        Serial.println(char(EEPROM.read(51 + j)));
+      }
+      EEPROM.write(50, len); // saving the length of password
+      password_length = len;    // saving the length of password
+      delay(10);
+      EEPROM.commit();
+
+      Serial.print("PASSWORD in EEPROM");
+
+      Serial.println("SSID length");
+      Serial.println(EEPROM.read(0));
+
+      Serial.println("password length");
+      Serial.println(EEPROM.read(50));
+
+      EEPROM.write(200, 1);
+      delay(100);
+      EEPROM.commit();
+      Serial.println("EEPROM Edited");
+    }
+
+    else if (data_from_switch.charAt(0) >= '0' && data_from_switch.charAt(0) <= '9')
     {
 
       //      Serial.print("data_from_switch is: ");
@@ -34,7 +86,7 @@ void Msg_from_switch()
 
       IPAddress hub_ip_fn(192, 168, 1, 255);
 
-      for(int i=0;i<5;i++)  ///////////////to check for acknowledgement and resend the data in case of no ack
+      for (int i = 0; i < 5; i++) ///////////////to check for acknowledgement and resend the data in case of no ack
       {
         ///////Send data to HUB/
         UDP.beginPacket(hub_ip_fn, 80);
@@ -83,9 +135,3 @@ void Msg_from_switch()
     }
   }
 }
-
-
-
-
-
-

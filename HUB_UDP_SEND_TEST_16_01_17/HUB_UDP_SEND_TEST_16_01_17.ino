@@ -39,7 +39,7 @@ void setup() {
   if (EEPROM.read(200) == 1)
   {
 
-    Serial.println("flag=1");
+ //   Serial.println("flag=1");
     while (!connectWifi())
       delay(100);
 
@@ -148,8 +148,8 @@ void loop() {
             delay(10);
           }
 
-          Serial.print("to_nodes= ");
-          Serial.println(to_nodes);
+//          Serial.print("to_nodes= ");
+//          Serial.println(to_nodes);
 
           if (to_nodes.indexOf("RESET_ESP") != -1)
           {
@@ -195,7 +195,7 @@ void loop() {
     {
       ////////////////////////////////////////////////////////////////////////////
 
-      Serial.println("beginning");
+//      Serial.println("beginning");
 
       String WiFi_info = "";
       while (!Serial.available())
@@ -209,8 +209,8 @@ void loop() {
       }
       delay(10);
 
-      Serial.print("WiFi_info= ");
-      Serial.println(WiFi_info);
+//      Serial.print("WiFi_info= ");
+//      Serial.println(WiFi_info);
 
       //      while(1)
       //      {
@@ -231,14 +231,14 @@ void loop() {
           delay(100);
           EEPROM.commit();
           k++;
-          Serial.println(char(EEPROM.read(j + 1)));
+//          Serial.println(char(EEPROM.read(j + 1)));
         }
         EEPROM.write(0, k - 1); // saving the length of ssid
         ssid_length = EEPROM.read(0); // saving the length of ssid
         delay(100);
         EEPROM.commit();
 
-        Serial.print("SSID in EEPROM");
+//        Serial.print("SSID in EEPROM");
 
 
         String pass = "";
@@ -251,7 +251,7 @@ void loop() {
           delay(100);
           EEPROM.commit();
           l++;
-          Serial.println(char(EEPROM.read(51 + j)));
+//          Serial.println(char(EEPROM.read(51 + j)));
         }
         EEPROM.write(50, l); // saving the length of password
         password_length = l;    // saving the length of password
@@ -259,19 +259,19 @@ void loop() {
         EEPROM.commit();
 
 
-        Serial.print("PASSWORD in EEPROM");
+//        Serial.print("PASSWORD in EEPROM");
 
 
-        Serial.println("SSID length");
-        Serial.println(EEPROM.read(0));
-
-        Serial.println("password length");
-        Serial.println(EEPROM.read(50));
+//        Serial.println("SSID length");
+//        Serial.println(EEPROM.read(0));
+//
+//        Serial.println("password length");
+//        Serial.println(EEPROM.read(50));
 
         EEPROM.write(200, 1);
         delay(100);
         EEPROM.commit();
-        Serial.println("EEPROM Edited");
+//        Serial.println("EEPROM Edited");
 
 
 
@@ -315,7 +315,7 @@ void loop() {
         //Serial.end();
       }
 
-      Serial.println("ending");
+//      Serial.println("ending");
 
       //////////////////////////////////////////////////////////////////////////////////////////////////
     }

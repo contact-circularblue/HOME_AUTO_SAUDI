@@ -30,11 +30,11 @@ boolean connectWifi()
   }
 
 
-  Serial.print("ssid_2=");
-  Serial.println(ssid_2);
-
-  Serial.print("password_2=");
-  Serial.println(password_2);
+//  Serial.print("ssid_2=");
+//  Serial.println(ssid_2);
+//
+//  Serial.print("password_2=");
+//  Serial.println(password_2);
 
   WiFi.disconnect();
 

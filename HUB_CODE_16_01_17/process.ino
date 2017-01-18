@@ -100,7 +100,7 @@ void process()
         //        Serial.println("hub add complete");
 
         delay(100);
-        Serial.print("Sending ACK\n");
+//        Serial.print("Sending ACK\n");
         client.send("wifi_details_rec", "message", "success");
 
         // Send WiFi details to the other ESP
@@ -119,7 +119,8 @@ void process()
       status_LEDs(4);
       Serial.println("node_add:");
       delay(4000);
-
+//while(Serial.available())
+//Serial.print(char(Serial.read()));
       String ID = "";
       {
         ID = "";

@@ -54,6 +54,10 @@ String ssid_string="";
         Serial.print("Resetting");
         ESP.reset();
         }
+        else
+        {
+        get_details();
+        }
       }
       break;
     }

@@ -68,13 +68,13 @@ void setup()
   //    delay(10);
   //  }
 
-//  while (Serial.available())
-//  {
-//    Serial.read();
-//  }
+  //  while (Serial.available())
+  //  {
+  //    Serial.read();
+  //  }
 
   // Initialise wifi connection
- // connectWifi();
+  // connectWifi();
 
   // only proceed if wifi connection successful
   //  if (wifiConnected) {
@@ -90,95 +90,18 @@ void loop()
 {
   if (EEPROM.read(200) == 1)
   {
-   if (WiFi.status() != WL_CONNECTED)
-   {
-    wifiConnected = connectWifi();
-    udpConnected = connectUDP();
-   }
-
-    if (Serial.available())
+    if (WiFi.status() != WL_CONNECTED)
     {
-
-      String WiFi_info = "";
-      while (!Serial.available())
-      {
-        delay(1);
-      }
-
-      while (Serial.available())
-      {
-        WiFi_info += char(Serial.read());
-        delay(10);
-      }
-      delay(10);
-
-
-      Serial.print("WiFi_info= ");
-      Serial.println(WiFi_info);
-
-      int index = WiFi_info.indexOf("SSID:");
-      if (index > -1)
-      {
-        String test_SSID=WiFi_info.substring(WiFi_info.indexOf("SSID:")+5,WiFi_info.indexOf("::PASSWORD::"));
-        String test_pass=WiFi_info.substring(WiFi_info.indexOf("::password::")+12,WiFi_info.indexOf(":::END:::"));
-
-        Serial.println("test_SSID= "+test_SSID);
-        Serial.println("test_pass= "+test_pass);
-        
-        String ID = "";
-        int k = 0;
-        for (int i = index + 5, j = 0; i < WiFi_info.indexOf("::password::"); i++, j++)
-        {
-          //ID += WiFi_info.charAt(i);
-          ssid_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid
-          delay(10);
-          EEPROM.commit();
-          k++;
-          Serial.println(char(EEPROM.read(j + 1)));
-        }
-        EEPROM.write(0, k); // saving the length of ssid
-        ssid_length = EEPROM.read(0); // saving the length of ssid
-        delay(10);
-        EEPROM.commit();
-
-        Serial.print("SSID in EEPROM");
-
-        String pass = "";
-        int len = 0;
-        for (int i = WiFi_info.indexOf("::password::") + 12, j = 0; i < WiFi_info.indexOf(":::END:::"); i++, j++)
-        {
-          password_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(51 + j, password_1[j]); // saving the password
-          delay(10);
-          EEPROM.commit();
-          len++;
-          Serial.println(char(EEPROM.read(51 + j)));
-        }
-        EEPROM.write(50, len); // saving the length of password
-        password_length = len;    // saving the length of password
-        delay(10);
-        EEPROM.commit();
-
-        Serial.print("PASSWORD in EEPROM");
-
-        Serial.println("SSID length");
-        Serial.println(EEPROM.read(0));
-
-        Serial.println("password length");
-        Serial.println(EEPROM.read(50));
-
-        EEPROM.write(200, 1);
-        delay(100);
-        EEPROM.commit();
-        Serial.println("EEPROM Edited");
-      }
+      wifiConnected = connectWifi();
+      udpConnected = connectUDP();
     }
+
+
 
     Check_Name = "";
     // check if the WiFi and UDP connections were successful
     if (wifiConnected) {
-      
+
       if (udpConnected) {
 
         // if there’s data available, read a packet
@@ -197,7 +120,7 @@ void loop()
             Check_Name += packetBuffer[i];
           }
           //        Serial.println();
-          Serial.print("RECEIVED FROM HUB="+Check_Name);
+          //          Serial.print("RECEIVED FROM HUB="+Check_Name);
 
 
           // send a reply, to the IP address and port that sent us the packet we received
@@ -209,10 +132,11 @@ void loop()
 
         Msg_from_switch(); // send the change made on the physical switch to hub
 
-       // Serial.println("NO data");
+        // Serial.println("NO data");
         delay(10);
       }
     }
+    get_details();
   }
   else if (EEPROM.read(200) == 0)
   {
@@ -220,85 +144,9 @@ void loop()
     //   wifiConnected = connectWifi();
     //   if (wifiConnected==false)
     {
-      String WiFi_info = "";
-      while (!Serial.available())
-      {
-        delay(1);
-      }
-
-      while (Serial.available())
-      {
-        WiFi_info += char(Serial.read());
-        delay(10);
-      }
-      delay(10);
-
-      Serial.print("WiFi_info= ");
-      Serial.println(WiFi_info);
-
-      int index = WiFi_info.indexOf("SSID:");
-      if (index > -1)
-      {
-
-        String test_SSID=WiFi_info.substring(WiFi_info.indexOf("SSID:")+5,WiFi_info.indexOf("::PASSWORD::"));
-        String test_pass=WiFi_info.substring(WiFi_info.indexOf("::password::")+12,WiFi_info.indexOf(":::END:::"));
-
-        Serial.println("test_SSID= "+test_SSID);
-        Serial.println("test_pass= "+test_pass);
-        
-        String ID = "";
-        int k = 0;
-        int j = 0;
-        for (int i = index + 5; i < WiFi_info.indexOf("::password::"); i++)
-        {
-          //ID += WiFi_info.charAt(i);
-          ssid_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid
-          delay(10);
-          EEPROM.commit();
-          k++;
-          Serial.print(char(EEPROM.read(j + 1)));
-          j++;
-        }
-        EEPROM.write(0, k); // saving the length of ssid
-        ssid_length = EEPROM.read(0); // saving the length of ssid
-        delay(10);
-        EEPROM.commit();
-
-        Serial.print("SSID in EEPROM");
-
-        String pass = "";
-        int len = 0;
-        for (int i = WiFi_info.indexOf("::password::") + 12, j = 0; i < WiFi_info.indexOf(":::END::"); i++, j++)
-        {
-          password_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(51 + j, password_1[j]); // saving the password
-          delay(10);
-          EEPROM.commit();
-          len++;
-          Serial.println(char(EEPROM.read(51 + j)));
-        }
-        EEPROM.write(50, len); // saving the length of password
-        password_length = len;    // saving the length of password
-        delay(10);
-        EEPROM.commit();
-
-        Serial.print("PASSWORD in EEPROM");
-
-        Serial.println("SSID length");
-        Serial.println(EEPROM.read(0));
-
-        Serial.println("password length");
-        Serial.println(EEPROM.read(50));
-
-        EEPROM.write(200, 1);
-        delay(10);
-        EEPROM.commit();
-        Serial.println("EEPROM Edited");
-
-        //        connectWifi();
-      }
+      get_details();
     }
+    delay(1);
   }
 }
 
