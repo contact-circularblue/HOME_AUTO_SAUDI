@@ -1,6 +1,7 @@
 #include<SoftwareSerial.h>
 #include<EEPROM.h>
 
+//#define _SS_MAX_RX_BUFF 256 // Increase software RX buffer size
 SoftwareSerial ESP_hub(10, 11);
 SoftwareSerial node_add(8, 9);
 const byte interruptPin = 2;
@@ -12,20 +13,31 @@ void setup() {
   node_add.begin(9600);
   pinMode(interruptPin, INPUT);
   attachInterrupt(digitalPinToInterrupt(interruptPin), Send_Reset, RISING);  // for sending reset to both ESP's
+
+  //node_add.print("node_add");
   //Serial.print("STARTING");
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //Serial.println("LOOP STARTED");
   ESP_hub.listen();
   if (ESP_hub.available())
   {
+    //Serial.println("HUB AVAILABLE");
     String input = "";
+
     while (ESP_hub.available())
     {
+      //Serial.println("IN WHILE");
       input += char(ESP_hub.read());
-      delay(1);
+      delay(10);
     }
+    //delay(100);
+
+    //Serial.print("input_string= "+ input);
+
+
     int index = input.indexOf("hub_says:");
     if (index > -1)
     {
@@ -74,15 +86,17 @@ void loop() {
       Serial.print(pass);
 
     }
+//    Serial.print("index=");
+//    Serial.println(input.indexOf("node_add:"));
 
     index = input.indexOf("node_add:");
     if (index > -1)
     {
-      Serial.println("NODE ADDITON");
+      Serial.println("NODE ADDITION");
       node_add.listen();
 
       String node_ID = "";
-      for (int i = 0; i < 30; i++)
+      for (int i = 0; i < 10; i++)
       {
         node_add.print("node_add");
         delay(200);
@@ -105,7 +119,7 @@ void loop() {
             int index = temp_str.indexOf("ID:");
             //while (node_add.available())
             {
-              node_ID = temp_str.substring(index+3);
+              node_ID = temp_str.substring(index + 3);
               //node_ID += char(node_add.read());
               //            ESP_hub.print(char(node_add.read()));
               //delay(50);
@@ -154,10 +168,11 @@ void loop() {
             }
 
           }
-         
+
         }
-         delay(1000);
+        delay(1000);
       }
+      //Serial.println("LISTENING TO HUB");
       ESP_hub.listen();
     }
   }

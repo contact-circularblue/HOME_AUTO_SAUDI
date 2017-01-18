@@ -27,15 +27,15 @@ void setup() {
   Serial.begin(9600);
   EEPROM.begin(512);
 
-//  Serial.println("here");
-//  //  EEPROM.write(200, 1);
-//  //  delay(100);
-//  //  EEPROM.commit();
-//
-//
-//  Serial.print("EEPROM.read(200)=");
-//  Serial.println(EEPROM.read(200));
-  
+  //  Serial.println("here");
+  //  //  EEPROM.write(200, 1);
+  //  //  delay(100);
+  //  //  EEPROM.commit();
+  //
+  //
+  //  Serial.print("EEPROM.read(200)=");
+  //  Serial.println(EEPROM.read(200));
+
   if (EEPROM.read(200) == 1)
   {
 
@@ -91,9 +91,11 @@ void loop() {
   //Serial.begin(9600);
   //while(1)
   {
+    delay(1);
 
     if (wifiConnected) {
       if (udpConnected) {
+        delay(1);
         //Serial.println("WiFi & UDP connected");
 
         //if (Serial.available())
@@ -143,16 +145,15 @@ void loop() {
           while (Serial.available())
           {
             to_nodes += char(Serial.read());
-
-//                        Serial.print("to_nodes= ");
-//                        Serial.println(to_nodes);
-
             delay(10);
           }
 
-          if(to_nodes.indexOf("RESET_ESP")!=-1)
+          Serial.print("to_nodes= ");
+          Serial.println(to_nodes);
+
+          if (to_nodes.indexOf("RESET_ESP") != -1)
           {
-            EEPROM.write(200,0);
+            EEPROM.write(200, 0);
             delay(100);
             EEPROM.commit();
             delay(100);
@@ -162,7 +163,7 @@ void loop() {
 
           char char_to_nodes[25];
 
-          for(int i=0;i<5;i++)
+          for (int i = 0; i < 5; i++)
           {
 
             UDP.beginPacket("192.168.1.255", 80);
@@ -226,7 +227,7 @@ void loop() {
         {
           //ID += WiFi_info.charAt(i);
           ssid_1[j] = WiFi_info.charAt(i);
-          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid                                                                                                                                                                     
+          EEPROM.write(j + 1, ssid_1[j]); // saving the ssid
           delay(100);
           EEPROM.commit();
           k++;
@@ -257,7 +258,7 @@ void loop() {
         delay(100);
         EEPROM.commit();
 
-        
+
         Serial.print("PASSWORD in EEPROM");
 
 
@@ -272,7 +273,7 @@ void loop() {
         EEPROM.commit();
         Serial.println("EEPROM Edited");
 
-        
+
 
         // Save this ID and password to EEPROM
         /*
