@@ -202,7 +202,7 @@ void loop() {
     }
 
 
-    //    Serial.print("data received=" + data);
+//    Serial.print("data received=" + data);
     //////////////////Serial.println();
     action = data.charAt(0);
     String temp1 = data.substring(data.indexOf(",") + 1);
