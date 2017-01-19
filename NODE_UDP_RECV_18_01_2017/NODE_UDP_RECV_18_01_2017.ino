@@ -55,9 +55,11 @@ void setup()
 
   WiFi.disconnect();
 
-  EEPROM.write(200, 1); // Remove this in final product
-  delay(100);
-  EEPROM.commit();
+  delay(1000);
+
+//  EEPROM.write(200, 0); // Remove this in final product
+//  delay(100);
+//  EEPROM.commit();
 
 
 
@@ -136,7 +138,11 @@ void loop()
         delay(10);
       }
     }
-    get_details();
+    else
+    {
+      get_details();
+    }
+    delay(1);
   }
   else if (EEPROM.read(200) == 0)
   {

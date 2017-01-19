@@ -2,6 +2,7 @@ void Msg_from_switch()
 {
   if (Serial.available())
   {
+    //Serial.println("Serial Is Available");
     data_from_switch = "";
     data_for_HUB = "";
     //    Serial.println("Initially:");
@@ -11,6 +12,7 @@ void Msg_from_switch()
     while (Serial.available())
     {
       data_from_switch += char(Serial.read());
+     // Serial.println(data_from_switch);
       delay(10);
     }
     //Serial.println("data from ARDUINO: " + data_from_switch);
@@ -41,14 +43,18 @@ void Msg_from_switch()
 
       String pass = "";
       int len = 0;
-      for (int i = data_from_switch.indexOf("::password::") + 12, j = 0; i < data_from_switch.indexOf(":::END:::"); i++, j++)
+      for (int i =data_from_switch.indexOf("::password::") + 12, j = 0; i < data_from_switch.indexOf(":::END::"); i++, j++)
       {
-        password_1[j] = data_from_switch.charAt(i);
-        EEPROM.write(51 + j, password_1[j]); // saving the password
+        pass += data_from_switch.charAt(i);
+        EEPROM.write(51 + j, pass.charAt(j)); // saving the password
         delay(10);
         EEPROM.commit();
         len++;
         Serial.println(char(EEPROM.read(51 + j)));
+      }
+      for (int i = 0; i < len; i++)
+      {
+        password_1[i] = pass.charAt(i);
       }
       EEPROM.write(50, len); // saving the length of password
       password_length = len;    // saving the length of password
@@ -121,7 +127,7 @@ void Msg_from_switch()
             //for (int i = 0; i < packetSize; i++)
             //              Serial.print(char(packetBuffer[i]));
 
-            Serial.print("recv ack");
+            //Serial.print("recv ack");
             Check_Name = "";
             break;
           }

@@ -201,7 +201,7 @@ void loop() {
       }
     }
 
-Serial.println("data= "+data);
+//Serial.println("data= "+data);
     //    Serial.print("data received=" + data);
     //////////////////Serial.println();
     action = data.charAt(0);

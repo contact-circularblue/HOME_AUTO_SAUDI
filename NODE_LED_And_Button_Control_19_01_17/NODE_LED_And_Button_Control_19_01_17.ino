@@ -125,25 +125,33 @@ void setup() {
   pinMode(LED_3, OUTPUT); //set the LED pin as OUTPUT
   pinMode(LED_4, OUTPUT); //set the LED pin as OUTPUT
 
-  if (EEPROM.read(1) == 1)
-    flag_1 = 1;
+  if (EEPROM.read(1001) == 1)
+    //flag_1 = 1;
+    digitalWrite(4, HIGH);
   else
-    flag_1 = 0;
+   // flag_1 = 0;
+    digitalWrite(4, LOW);
 
-  if (EEPROM.read(2) == 1)
-    flag_2 = 1;
+  if (EEPROM.read(1002) == 1)
+    //flag_2 = 1;
+    digitalWrite(5, HIGH);
   else
-    flag_2 = 0;
+    //flag_2 = 0;
+    digitalWrite(5, LOW);
 
-  if (EEPROM.read(3) == 1)
-    flag_3 = 1;
+  if (EEPROM.read(1003) == 1)
+    //flag_3 = 1;
+    digitalWrite(6, HIGH);
   else
-    flag_3 = 0;
+    //flag_3 = 0;
+    digitalWrite(6, LOW);
 
-  if (EEPROM.read(4) == 1)
-    flag_4 = 1;
+  if (EEPROM.read(1004) == 1)
+    //flag_4 = 1;
+    digitalWrite(7, HIGH);
   else
-    flag_4 = 0;
+    //flag_4 = 0;
+    digitalWrite(7, LOW);
 
   delay(2000); // when esp is switched on it sends some data,which is not required
 }
@@ -194,14 +202,14 @@ void loop() {
           delay(1000);
           Serial.print("SSID:"+SSID);
           Serial.print("::password::"+password);
-          
+          Serial.print(":::END::");
           SSID="";
           password="";          
         }
       }
     }
 
-
+//Serial.println("data= "+data);
     //    Serial.print("data received=" + data);
     //////////////////Serial.println();
     action = data.charAt(0);

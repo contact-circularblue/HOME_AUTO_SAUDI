@@ -14,8 +14,8 @@ void get_details()
     }
     delay(10);
 
-    Serial.print("WiFi_info= ");
-    Serial.println(WiFi_info);
+//    Serial.print("WiFi_info= ");
+//    Serial.println(WiFi_info);
 
     int index = WiFi_info.indexOf("SSID:");
     if (index > -1)
