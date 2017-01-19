@@ -103,6 +103,8 @@ module.exports = function Hub(uniqueID,socket){
 			if(this.Nodes[i].id() == nodeId){
 				console.log("NODE FOUND");
 				return this.Nodes[i];
+			}else{
+				console.log("NODE NOT FOUND");
 			}
 		}
 	};
