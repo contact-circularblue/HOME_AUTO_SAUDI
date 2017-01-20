@@ -134,11 +134,17 @@ void process()
           Serial.println("ID_STRING= " + ID);
         }
       }
+      
+      delay(1000);
+      
+      Serial.println("1");
 
       for (int i = 0; i < 50; i++)
       {
         if (ID.indexOf("ID:") != -1)
         {
+          
+          Serial.println("2");
 
           String node_ID = ID.substring(ID.indexOf("ID:") + 3);
           json_add_node = "";
@@ -146,6 +152,9 @@ void process()
           //String node_Id = "4234567890";
 
           JsonObject& root_add_node = jsonBuffer.createObject();
+          
+          Serial.println("3");
+          
           root_add_node["nodeId"] = node_ID;
           root_add_node["type"] = String(node_ID[0]);
 

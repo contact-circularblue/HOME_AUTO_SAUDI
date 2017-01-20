@@ -123,7 +123,19 @@ void setup() {
 
 
   // We start by connecting to a WiFi network
-  while (!connect_wifi());
+  while (!connect_wifi())
+  {
+    delay(1);
+    if(Serial.available())
+    {
+      delay(100);
+      if(Serial.find("RESET_ESP"));
+      EEPROM.write(200,0);
+      delay(10);
+      EEPROM.commit();
+      ESP.reset();
+    }
+  }
   status_LEDs(1);
 
 

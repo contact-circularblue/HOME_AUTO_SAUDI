@@ -13,8 +13,10 @@ bool connect_wifi()//String ssid, String password)
     Serial.print(".");
     if (i > 20) {
       state = false;
+      if(!Serial.available())
       ESP.reset();
-      //break;
+      
+      break;
     }
     i++;
   }
