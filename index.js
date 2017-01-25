@@ -1,15 +1,27 @@
 var app = require('express')();
 var http = require('http').Server(app);
-// var io = require('socket.io')(http);//{'pingInterval': 40000, 'pingTimeout': 3600000}
 var io = require('socket.io')(http, {'pingInterval': 2000, 'pingTimeout': 3600000});
-// io.set('heartbeat timeout', 120000);
-// io.set('transports', ['xhr-polling', 'jsonp-polling']);
 var readlineSync = require('readline-sync');
 var readline = require('readline');
 var typeOf = require('typeof');
 var net = require('net');
-var fs = require("fs")
+var fs = require("fs");
+var mongoose = require('mongoose');
 
+
+
+// Object.defineProperty(Object.prototype, 'isEmpty', {
+//   enumerable: false,
+//   value: () => 1
+// });
+
+// Object.prototype.isEmpty = function() {
+//     for(var key in this) {
+//         if(this.hasOwnProperty(key))
+//             return false;
+//     }
+//     return true;
+// }
 
 
 
@@ -18,25 +30,24 @@ var Hub = require('./Hub');
 var HubController = require('./HubController');
 var Device = require('./Device');
 var Events = require('./Events');
+var Database = require('./Database');
 ///
 
 var DeviceType = {Mobile:"Mobile",Hub:"Hub"};
 connections = [];
+// var db = new Database();
+http.listen(3000, function(){
 
-Object.prototype.isEmpty = function() {
-    for(var key in this) {
-        if(this.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
+  console.log('listening on port :3000');
+});
+
 
 
 var stdin = process.openStdin();
 stdin.setEncoding( 'utf8' );
 stdin.on('data', function(chunk) {
 
-    if(chunk.toString().trim() ==='rohan'){
+  if(chunk.toString().trim() ==='rohan'){
     console.log("I am the greatest");
 
   }else if(chunk.toString().trim() ==='Hubs'){
@@ -55,7 +66,7 @@ stdin.on('data', function(chunk) {
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
           io.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
-  }else if(chunk.toString().trim() ==='power') {
+  }else if(chunk.toString().trim() ==='power'){
 
   } else{
     console.log("command not found")
@@ -65,13 +76,12 @@ stdin.on('data', function(chunk) {
 
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+   res.sendFile(__dirname + '/index.html');
+   
+
 });
 
 
-// setInterval(function() {
-//     HubController.UpdateDevices();
-//   }, 60000);
 
 
 io.on('ping',function(data){
@@ -81,10 +91,10 @@ io.on('pong',function(data){
   console.log('pong  ' + data );
 });
 
+///
+
 io.on('connection', function(socket){
-
-
-  
+ 
   connections.push(socket);
   console.log('connected %s sockets connected', connections.length);
   // console.log('transport ' + socket.io.engine.transport.name);
@@ -134,9 +144,14 @@ socket.on('pong',function(data){
         break;
       case DeviceType.Hub:
       console.log("Hub :");
-        console.log(data);
-       var node = socket.Hub.addNode(data.nodeId,data.type);
-       socket.Hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type()},Events.Emit.add_Node);
+      console.log(data);
+      var node = socket.Hub.addNode(data.nodeId,data.type);
+      //DATABASE
+
+      // var db_obj = {};
+      // {Hubid: socket.Hub.uniqueID(), Nodeid: data.nodeId}
+      Database.addNode({hubid: socket.Hub.uniqueID(), node: node});
+      socket.Hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type()},Events.Emit.add_Node);
         break;
     }
     console.log("add node ");  
@@ -172,6 +187,8 @@ socket.on('pong',function(data){
       case DeviceType.Hub:
 
         var hub_temp = HubController.AddHub(uniqueID,socket);
+        // Database.find({});
+        // Person.findOne({ 'name.last': 'Ghost' }, 'name occupation', function (err, person) {
 
         var response_obj = {};
 
@@ -182,15 +199,27 @@ socket.on('pong',function(data){
           socket.DeviceType = DeviceType.Hub; 
           socket.Hub = hub_temp;
 
+          mongoose.model('nodes').find({Hubid: '1234'},function(err,docs){
+
+              for(var docs_i=0; docs_i < docs.length; docs_i++){
+
+                var node_docs = docs[docs_i];
+                var nodeId   = node_docs.Nodeid;
+                var hubId    = node_docs.Hubid;
+                var nodeType = node_docs.Nodetype;
+                var devices =  node_docs.devices;
+      
+                    console.log("adding node to Hub");
+                socket.Hub.addNode(nodeId,nodeType);
+               } 
+          });            
+
        }else{
           console.log("Hub Not Added")
           response_obj['success'] = "false";
           response_obj['message'] = "Hub Not Added";
        }
-        socket.emit(Events.Emit.ack, { message: JSON.stringify(response_obj) } );
-        // socket.setTimeout(0);
-        // socket.setKeepAlive(true,60000); //1 min = 60000 milliseconds.
-        // socket.emit('check_alive','There?');
+       socket.emit(Events.Emit.ack, { message: JSON.stringify(response_obj) } );
         setTimeout(function() {
             socket.emit(Events.On.dummy,"data");
           // HubController.UpdateDevices();
@@ -295,7 +324,6 @@ socket.on('pong',function(data){
               var response_obj = {};
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
-
               socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
           break;
           case DeviceType.Hub:
@@ -498,8 +526,5 @@ socket.on('pong',function(data){
 });
 
 
-http.listen(3000, function(){
 
-  console.log('listening on port :3000');
-});
 

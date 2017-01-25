@@ -44,8 +44,6 @@ module.exports = function Device(id,type){
 	
 
 	// call class functions and variables
-
-
 	this.setCurrentState('false');
 	this.setType(type);
 	this.setId(id);

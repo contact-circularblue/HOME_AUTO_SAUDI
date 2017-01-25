@@ -23,9 +23,9 @@ module.exports = {
 
 	HubExists : function(uniqueID){
 	    var output = Hubs.filter(function(item){  return item.uniqueID() == uniqueID; });
-	    if(output.isEmpty())
-	    {
-	          return false;
+
+	    if(Object.keys(output).length === 0){
+	    	return false;
 	    }
 	    return true;
 	},

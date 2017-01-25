@@ -1,5 +1,4 @@
 var Node = require('./Node');
-
 var DeviceState = {Online:"Online",Offline:"Offline"};
 
 module.exports = function Hub(uniqueID,socket){
@@ -43,11 +42,16 @@ module.exports = function Hub(uniqueID,socket){
 	};
 	this.mobileDeviceExits =function(socketId){
 	    var output = this.MobileDevices.filter(function(item){  return item.id == socketId; });
-	    if(output.isEmpty())
-	    {
-	          return false;
+
+	   	if(Object.keys(output).length === 0){
+	    	return false;
 	    }
 	    return true;
+	    // if(output.isEmpty())
+	    // {
+	    //       return false;
+	    // }
+	    // return true;
 	}
 
 	this.uniqueID = function(){
@@ -105,6 +109,7 @@ module.exports = function Hub(uniqueID,socket){
 				return this.Nodes[i];
 			}else{
 				console.log("NODE NOT FOUND");
+				return null;
 			}
 		}
 	};
