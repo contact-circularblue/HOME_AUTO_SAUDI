@@ -169,6 +169,7 @@ socket.on('pong',function(data){
     socket.emit(Events.Emit.Node_info,node);
   });
 
+
   socket.on(Events.On.chat_message, function(msg){
   	console.log('message: ' + msg);
   	io.emit('chat message', msg);
@@ -203,14 +204,18 @@ socket.on('pong',function(data){
 
               for(var docs_i=0; docs_i < docs.length; docs_i++){
 
-                var node_docs = docs[docs_i];
-                var nodeId   = node_docs.Nodeid;
-                var hubId    = node_docs.Hubid;
-                var nodeType = node_docs.Nodetype;
-                var devices =  node_docs.devices;
-      
-                    console.log("adding node to Hub");
-                socket.Hub.addNode(nodeId,nodeType);
+                  var node_docs = docs[docs_i];
+                  var nodeId   = node_docs.Nodeid;
+                  var hubId    = node_docs.Hubid;
+                  var nodeType = node_docs.Nodetype;
+                  var devices =  node_docs.devices;
+                  var irDevices = node_docs.irDevices;
+        
+                  console.log("adding node to Hub");
+                  var node = socket.Hub.addNode(nodeId,nodeType);
+                  for (var i = 0; i < irDevices.length; i++) {
+                      node.addDevice(new Device(irDevices[i].id,"IR"));                    
+                  }
                } 
           });            
 
@@ -303,7 +308,7 @@ socket.on('pong',function(data){
             response_obj['nodeId'] = data.nId;
             response_obj['deviceId'] = data.dId;
             response_obj['deviceState'] = data.dState;
-
+  
             // var node =  socket.Hub.getNode(data.nId);
             // var device = node.getDevice(data.dId);
             // device.setCurrentState(data.dState);
@@ -329,25 +334,17 @@ socket.on('pong',function(data){
           case DeviceType.Hub:
             console.log("Hub : ");
             console.log(data);
-
             var response_obj = {};
             response_obj['nodeId']      = data.nId;
             response_obj['deviceId']    = data.dId;
             response_obj['deviceState'] = "true"; 
-            response_obj['success']     = data.success ;
+            response_obj['success']     = data.success;
 
-
+            console.log("deviceId :" + data.dId);
 
             var node = socket.Hub.getNode(data.nId);
-
-            console.log("______________________________HUB =");
-            console.log(socket.Hub);
-
-            console.log("______________________________NODE = ");
-            console.log(node);
-
-            node.addDevice(new Device(data.dId,"IR"));
-
+            node.addDevice(new Device(data.dId,"IR"));  
+            Database.addDevice({node: node,hubid: socket.Hub.uniqueID(),deviceType : "IR",deviceId: data.dId});
             socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
           break;
         }
@@ -365,12 +362,13 @@ socket.on('pong',function(data){
 
         var node =  socket.Hub.getNode(data.nodeId);
         // console.log(node);
-        var IRDevice = [];
+        var irDevice = [];
         console.log("IR DEVICES FOR NODE : " + node.id());
         for (var i = 0; i < node.IRDevices.length; i++) {
            console.log(node.IRDevices[i].id());
+           irDevice.push(node.IRDevices[i].id());
         }
-       // socket.emit(Events.Emit.Node_devices_IR,IRDevice);
+        socket.emit(Events.Emit.Node_devices_IR,irDevice);
    });
 
    socket.on(Events.On.Node_devices,function(data){

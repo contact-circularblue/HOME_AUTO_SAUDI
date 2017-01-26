@@ -22,8 +22,6 @@ var node_schema = mongoose.Schema({
 
 var node_model = mongoose.model('nodes', node_schema);
 
- 
-
 module.exports = {
 
 	addNode : function(data){
@@ -53,9 +51,38 @@ module.exports = {
 
 			console.log("Add node to database");
 	},
-	addDevice : function(node){
+	addDevice : function(data){
+//		{node: node,hubid: socket.Hub.uniqueID(),deviceType : "IR"}
+
+		switch(data.deviceType){
+			case 'Default':
+				this.Devices.push(device);
+				break;
+			case 'IR':
+				var Hubid = data.hubid;
+				var Nodeid = data.node.id();
+				var Nodetype = data.node.type();
+				var DeviceId = data.deviceId;
+
+				console.log("Hubid : " + Hubid);
+				console.log("Nodeid : " + Nodeid);
+				console.log("Devices Id : " + DeviceId);
+
+				mongoose.model('nodes').find({Hubid: Hubid,Nodeid: Nodeid},function(err,docs){
+					console.log(docs);
+					for (var i = 0; i < docs.length; i++) {
+						docs[i].irDevices.push({id: DeviceId});
+						docs[i].save(function(err,resut){
+							if(err){
+								console.log(err);
+							}
+						});
+					};
+		 		});
 
 
+				break;
+		};
 	},
     addDevices: function(node){
 
