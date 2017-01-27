@@ -199,8 +199,8 @@ socket.on('pong',function(data){
           response_obj['message'] = "Hub Added";
           socket.DeviceType = DeviceType.Hub; 
           socket.Hub = hub_temp;
-
-          mongoose.model('nodes').find({Hubid: '1234'},function(err,docs){
+          console.log(uniqueID);
+          mongoose.model('nodes').find({Hubid: uniqueID},function(err,docs){
 
               for(var docs_i=0; docs_i < docs.length; docs_i++){
 
