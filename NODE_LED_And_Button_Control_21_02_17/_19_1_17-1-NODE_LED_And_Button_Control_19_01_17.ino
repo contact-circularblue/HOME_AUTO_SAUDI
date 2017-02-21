@@ -111,6 +111,7 @@ void setup() {
   Serial.flush();
 
   //EEPROM.update(985, 0);
+  
   // ListSize = EEPROM.read(985);
   // listSize = EEPROM.read(985);///Linked List Size
 

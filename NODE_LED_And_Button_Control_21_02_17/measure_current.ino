@@ -71,7 +71,7 @@ float getVPP()
 
   // Subtract min from max
 
-  result = ((maxValue - minValue) * 3) / 1023.0;
+  result = ((maxValue - minValue) * 3.3) / 1023.0;
 
   return result;
 
