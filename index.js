@@ -8,7 +8,35 @@ var net = require('net');
 var fs = require("fs");
 var mongoose = require('mongoose');
 
+// fs.readdir('/Users/rajivaneja/Downloads/export', (err, files) => {
+//   var prefix= "ic_device_";
+//   var index=0;
+//   files.forEach(file => {
 
+//     var new_file_name = prefix+index;
+//     console.log(file);
+//     fs.rename(file, '/Users/rajivaneja/Desktop/remaned_file/'+new_file_name+'.xml', function(err) {
+//       if ( err ) console.log('ERROR: ' + err);
+//       console.log("task completed");
+//       index++;
+//     });
+//   });
+// })
+// var path = '/Users/rajivaneja/Downloads/export';
+// fs.readdir(path, function(err, items) {
+//     console.log(items);
+ 
+//     for (var i=0; i<items.length; i++) {
+//         console.log(items[i]);
+//         fs.readFile(items[i], 'utf8', function (err,data) {
+//           if (err) {
+//             return console.log(err);
+//           }
+//           console.log(data);
+//         });
+//         break;
+//     }
+// });
 
 // Object.defineProperty(Object.prototype, 'isEmpty', {
 //   enumerable: false,
@@ -182,6 +210,8 @@ socket.on('pong',function(data){
     uniqueID   = data.uniqueID; 
     // console.log("uniqueID" + uniqueID); 
     // console.log("deviceType" + deviceType); 
+    console.log(data);
+
 
     switch(deviceType)
     { 
@@ -338,14 +368,19 @@ socket.on('pong',function(data){
             response_obj['nodeId']      = data.nId;
             response_obj['deviceId']    = data.dId;
             response_obj['deviceState'] = "true"; 
-            response_obj['success']     = data.success;
+            response_obj['success']     = data.success; 
 
             console.log("deviceId :" + data.dId);
+
+
+
+          if(data.success=="true"){
 
             var node = socket.Hub.getNode(data.nId);
             node.addDevice(new Device(data.dId,"IR"));  
             Database.addDevice({node: node,hubid: socket.Hub.uniqueID(),deviceType : "IR",deviceId: data.dId});
-            socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
+          }
+          socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
           break;
         }
    });
@@ -427,7 +462,6 @@ socket.on('pong',function(data){
               response_obj['success'] = "true";
               response_obj['nId']     = data.nodeId;
               response_obj['dId']     = data.deviceId;
-
               socket.Hub.emit(Events.Emit.Node_IR_delete,{ message: JSON.stringify(response_obj) });
           break;
           case DeviceType.Hub:
@@ -435,15 +469,30 @@ socket.on('pong',function(data){
             console.log(data);
 //            { nId: '4234567890', success: 'true', dId: '11' }
             var response_obj = {};
-            response_obj['nodeId']   = data.nId;
-            response_obj['power']    = data.power;     
-
             var node = socket.Hub.getNode(data.nId);
-          //  node.addDevice(new Device(data.dId,"IR"));
+            var device_data = {};
+            device_data['success'] = "true";
+            device_data['type'] = "IR";
+            device_data['deviceId'] = data.dId;
 
-           // socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_IR_delete);
+            node.removeDevice(device_data);
+            Database.removeDevice({nodeid: data.nId,hubid: socket.Hub.uniqueID(),deviceType : "IR",deviceId: data.dId});
+
+             socket.Hub.broadCastToMobieDevices(device_data,Events.Emit.Node_IR_delete);
           break;
         }
+  });
+  socket.on(Events.On.Node_delete,function(data){
+    //removeNode
+
+    var node  = socket.Hub.getNode(data.nodeId);
+    socket.Hub.removeNode(node);
+    Database.removeNode({hubid:socket.Hub.uniqueID(),nodeid: data.nodeId});
+
+    var device_data = {};
+    device_data['success'] = "true";
+    device_data['nodeId'] = data.nodeId;
+    socket.Hub.broadCastToMobieDevices(device_data,Events.Emit.Node_delete);
   });
 
 
@@ -513,8 +562,7 @@ socket.on('pong',function(data){
         console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
         socket.Hub.MobileDevices.splice(socket,1);
         console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
-                console.log("TIME : " + socket.Hub.getDateTime());
-
+        console.log("TIME : " + socket.Hub.getDateTime());
         break;
     }
     connections.splice(connections.indexOf(socket),1);

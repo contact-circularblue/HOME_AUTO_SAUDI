@@ -84,6 +84,31 @@ module.exports = {
 				break;
 		};
 	},
+	removeDevice: function(data){
+		
+		var hubid      = data.hubid;
+		var nodeid     = data.nodeid;
+		var deviceId   = data.deviceId;
+		var deviceType = data.deviceType;
+		var hubid      = data.hubid;
+
+		if(deviceType=="IR"){
+
+			mongoose.model('nodes').update({Hubid: hubid,Nodeid: nodeid},{$pull:{"irDevices": {id:deviceId}}},function(err,docs){
+					console.log(docs);
+					console.log(err);
+			});
+		}
+	},
+	removeNode: function(data){
+																										
+		var hubid  = data.hubid;
+		var nodeid = data.nodeid;
+		mongoose.model('nodes').findOneAndRemove({Hubid:hubid,Nodeid:nodeid},function(err,docs){
+			console.log(docs);
+			console.log(err);
+		});
+	},
     addDevices: function(node){
 
 	},

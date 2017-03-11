@@ -21,9 +21,8 @@
  On['Node_devices_IR']  = "Node_devices_IR";
  On['Node_power']       = "Node_power";
  On['Node_IR_delete']   = "Node_IR_delete";
-
-
-
+ On['Node_delete']      = "Node_delete";
+  
 var Emit = {};
  Emit['wifi_details']    = "wifi_details";
  Emit['add_Node'] 	     = "add_Node";
@@ -41,6 +40,7 @@ var Emit = {};
  Emit['Node_devices_IR'] = "Node_devices_IR";
  Emit['Node_power']      = "Node_power";
  Emit['Node_IR_delete']  = "Node_IR_delete";
+ Emit['Node_delete']     = "Node_delete";
  
  exports.On   = On;
  exports.Emit = Emit;

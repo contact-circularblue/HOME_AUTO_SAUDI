@@ -45,6 +45,41 @@ module.exports = function Node(id,type) {
 		};
 	};
 
+	this.removeDevice = function(device){
+
+			switch(device.type){
+
+			case 'Default':
+				this.Devices.splice(device);
+				break;
+			case 'IR':
+				var irDeviceId = device.deviceId;
+				console.log("IR DEVICE ID " + irDeviceId);
+				for (var i = 0; i < this.IRDevices.length; i++) {
+						console.log("__IR DEVICE ID (from array object) " + this.IRDevices[i].id());
+						//this.IRDevices.splice(this.IRDevices[i]);
+				}
+
+				for (var i = 0; i < this.IRDevices.length; i++) {
+					if(this.IRDevices[i].id() == irDeviceId){
+						console.log("IR DEVICE ID (from array object) " + this.IRDevices[i].id());
+						console.log("IR DEVICE ID (from function arg)" + irDeviceId);
+						this.IRDevices.splice(i,1);
+					}
+				}
+			    break;
+		};
+
+				console.log("ir devices array length" +  this.IRDevices.length);
+
+				for (var i = 0; i < this.IRDevices.length; i++) {
+						console.log("__IR DEVICE ID (from array object) " + this.IRDevices[i].id());
+						//this.IRDevices.splice(this.IRDevices[i]);
+				}
+
+
+	};
+
 
 	this.getDevice =function(deviceId){
 		
@@ -54,6 +89,8 @@ module.exports = function Node(id,type) {
 			}
 		}
 	};
+
+
 
 	this.getDevices =function(){
 		return this.Devices;
