@@ -95,5 +95,9 @@ module.exports = function Node(id,type) {
 	this.getDevices =function(){
 		return this.Devices;
 	};
+
+	this.removeDevices =function(){
+		this.Devices    = [];
+	}
 	this.addDevices(this.type_);
 }

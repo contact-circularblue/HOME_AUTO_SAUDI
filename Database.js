@@ -118,6 +118,18 @@ module.exports = {
 		    	return docs;
 		 	});
 	
+	},
+	setDeviceState: function(data){
+		
+		var Hubid = data.hubid;
+		var deviceId = data.deviceId;
+		var state = data.state;
+
+		mongoose.model('nodes').update({"Hubid":Hubid,"devices.id":deviceId},{$set:{"devices.$.state":state}},{multi:true},function(err,docs){
+			console.log(err);
+			console.log(docs);
+		});
+
 	}
 }
 

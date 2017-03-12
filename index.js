@@ -276,9 +276,6 @@ socket.on('pong',function(data){
           if(socket.Hub==null){
             return;
           }
-
-
-
           console.log(uniqueID);
           mongoose.model('nodes').find({Hubid: uniqueID},function(err,docs){
 
@@ -297,6 +294,18 @@ socket.on('pong',function(data){
                   //CHECK
                   if(node==null){
                     return;
+                  }
+
+
+
+                  if((devices.length!=0) || devices!=null){
+                    node.removeDevices();
+                  }
+
+                  for(var i = 0; i < devices.length; i++){
+                    var device = new Device(devices[i].id,"Default");
+                    device.setCurrentState(devices[i].state);
+                    node.addDevice(device);
                   }
 
 
@@ -419,10 +428,38 @@ socket.on('pong',function(data){
             response_obj['nodeId'] = data.nId;
             response_obj['deviceId'] = data.dId;
             response_obj['deviceState'] = data.dState;
+
+
   
-            // var node =  socket.Hub.getNode(data.nId);
-            // var device = node.getDevice(data.dId);
-            // device.setCurrentState(data.dState);
+             var node =  socket.Hub.getNode(data.nId);
+             if(node == null){
+               console.log("node is null");
+               return;
+             }
+             console.log("node type" + node.type());
+             var node_type = node.type();
+             console.log("device id" + data.dId);
+
+
+             if(node_type >= data.dId){
+
+               var device = node.getDevice(data.dId);
+               if(device==null){
+                 console.log("device is null");
+                 return;
+               }
+               device.setCurrentState(data.dState);
+
+                var Hubid_ = socket.Hub.uniqueID();
+                var deviceId_ = data.dId;
+                var state_ = (data.dState == 'true');
+
+                console.log("Device state" + state_);
+               Database.setDeviceState({hubid:Hubid_,deviceId:deviceId_,state:state_});
+
+             }
+
+
 
             socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_change);
           break;
@@ -498,9 +535,6 @@ socket.on('pong',function(data){
           console.log("Nodes is null");
           return;
         }
-
-
-
         var nodes = []; 
         for (var i = 0; i < socket.Hub.Nodes.length; i++) {
             nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type()});
@@ -561,8 +595,8 @@ socket.on('pong',function(data){
               // console.log("current State " + node.Devices[j].currentState());
               devices.push({'id':node.Devices[j].id(),'state':node.Devices[j].currentState()});
           }
-          console.log("Node devices : ")
-          console.log(devices);
+          // console.log("Node devices : ")
+          // console.log(node.getDevices());
           socket.emit(Events.Emit.Node_devices,devices);
    });
   socket.on(Events.On.Node_power,function(data){
@@ -593,7 +627,7 @@ socket.on('pong',function(data){
             console.log(data);
 //            { nId: '4234567890', success: 'true', dId: '11' }
             var response_obj = {};
-            response_obj['nodeId']      = data.nId;
+            response_obj['nodeId']   = data.nId;
             response_obj['power']    = data.power;     
 
             var node = socket.Hub.getNode(data.nId);
