@@ -112,6 +112,7 @@ module.exports = function Hub(uniqueID,socket){
 				return null;
 			}
 		}
+		return null;
 	};
 	this.checkAlive = function(data){
 		this.check_alive = data;

@@ -160,6 +160,13 @@ socket.on('pong',function(data){
 
   socket.on(Events.On.add_Node,function(data){
 
+        if(socket==null){
+          return;
+        }
+        if(socket.Hub==null){
+          return;
+        }
+
     switch(socket.DeviceType){
 
       case DeviceType.Mobile:
@@ -168,11 +175,18 @@ socket.on('pong',function(data){
         var response_obj = {};
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
+
+
+
+
           socket.Hub.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
         break;
       case DeviceType.Hub:
       console.log("Hub :");
       console.log(data);
+
+
+
       var node = socket.Hub.addNode(data.nodeId,data.type);
       //DATABASE
 
@@ -187,12 +201,26 @@ socket.on('pong',function(data){
 
   socket.on(Events.On.Node_info,function(data){
 
-
+        if(socket==null){
+          return;
+        }
+        if(socket.Hub==null){
+          return;
+        }
 
     var node = socket.Hub.getNode(data.nodeId);
+
+
+    if(node ==  null){
+      return;
+    }
+
     // var response_obj = {};
     // response_obj['success'] = "true";
     // response_obj['message'] = " " 
+
+
+
 
     socket.emit(Events.Emit.Node_info,node);
   });
@@ -203,7 +231,16 @@ socket.on('pong',function(data){
   	io.emit('chat message', msg);
   });
 
-  socket.on(Events.On.addDevice, function(data,callback){
+  socket.on(Events.On.addDevice, function(data,callback){ 
+
+    //CHECK
+    if(socket==null){
+      return;
+    }
+
+
+
+
     // console.log(data);
     var deviceType,uniqueID;  
     deviceType = data.deviceType;
@@ -227,8 +264,21 @@ socket.on('pong',function(data){
           console.log("Hub Added");
           response_obj['success'] = "true";
           response_obj['message'] = "Hub Added";
+
+          //CHECK
+          // if(socket.DeviceType==null){
+          //     return null;
+          // }
           socket.DeviceType = DeviceType.Hub; 
           socket.Hub = hub_temp;
+
+            //CHECK
+          if(socket.Hub==null){
+            return;
+          }
+
+
+
           console.log(uniqueID);
           mongoose.model('nodes').find({Hubid: uniqueID},function(err,docs){
 
@@ -243,6 +293,14 @@ socket.on('pong',function(data){
         
                   console.log("adding node to Hub");
                   var node = socket.Hub.addNode(nodeId,nodeType);
+
+                  //CHECK
+                  if(node==null){
+                    return;
+                  }
+
+
+
                   for (var i = 0; i < irDevices.length; i++) {
                       node.addDevice(new Device(irDevices[i].id,"IR"));                    
                   }
@@ -272,6 +330,10 @@ socket.on('pong',function(data){
                console.log("Hub Exists");
                var Hub_temp = HubController.GetHub(uniqueID);
                socket.Hub = Hub_temp;
+               if(socket.Hub==null){
+                 console.log("Hub is null");
+                 return;
+               }
                if(Hub_temp.addMobileDevice(socket)==1){
                   console.log("Mobile device added");
                  // callback(true);
@@ -296,6 +358,15 @@ socket.on('pong',function(data){
   });
 
   socket.on(Events.On.wifi_details,function(data){
+    if(socket==null){
+      return;
+    }
+    if(socket.Hub==null){
+      return;
+    }
+
+
+
     socket.Hub.setWifiDetails(data);
     var response_obj = {};
     response_obj['success'] = "true";
@@ -319,6 +390,16 @@ socket.on('pong',function(data){
   });
 
    socket.on(Events.On.Node_change,function(data){
+
+    if(socket == null){
+      return;
+    }
+    if(socket.Hub==null){
+      return;
+    }
+
+
+
         console.log(data);
         switch(socket.DeviceType){
           case DeviceType.Mobile:
@@ -350,6 +431,20 @@ socket.on('pong',function(data){
 
    socket.on(Events.On.addIRDevice,function(data){
 
+
+        if(socket==null){
+          console.log("socket in null");
+          return;
+        }
+        if(socket.Hub==null){
+          console.log("Hub is null");
+          return;
+        }
+
+
+
+
+
         console.log("ADD IR DEVICE");
         console.log(data);
         switch(socket.DeviceType){
@@ -377,6 +472,10 @@ socket.on('pong',function(data){
           if(data.success=="true"){
 
             var node = socket.Hub.getNode(data.nId);
+            if(node==null){
+              console.log("node is null");
+              return;
+            }
             node.addDevice(new Device(data.dId,"IR"));  
             Database.addDevice({node: node,hubid: socket.Hub.uniqueID(),deviceType : "IR",deviceId: data.dId});
           }
@@ -386,6 +485,22 @@ socket.on('pong',function(data){
    });
 
    socket.on(Events.On.Node_all,function(data){
+
+        if(socket==null){
+          console.log("socket in null");
+          return;
+        }
+        if(socket.Hub==null){
+          console.log("Hub is null");
+          return;
+        }
+        if(socket.Hub.Nodes==null){
+          console.log("Nodes is null");
+          return;
+        }
+
+
+
         var nodes = []; 
         for (var i = 0; i < socket.Hub.Nodes.length; i++) {
             nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type()});
@@ -395,7 +510,20 @@ socket.on('pong',function(data){
 
    socket.on(Events.On.Node_devices_IR,function(data){
 
+    if(socket==null){
+      console.log("socket is null");
+      return;
+    }
+    if(socket.Hub==null){
+      console.log("Hub is null");
+      return;
+    }
+
         var node =  socket.Hub.getNode(data.nodeId);
+        if(node==null){
+            console.log("node is null");
+            return;
+        }
         // console.log(node);
         var irDevice = [];
         console.log("IR DEVICES FOR NODE : " + node.id());
@@ -407,8 +535,25 @@ socket.on('pong',function(data){
    });
 
    socket.on(Events.On.Node_devices,function(data){
+    if(socket==null){
+      console.log("socket is null");
+      return;
+    }
+    if(socket.Hub==null){
+      console.log("Hub is null");
+      return;
+    }
 
           var node =  socket.Hub.getNode(data.nodeId);
+
+          if(node==null){
+            console.log("node is null");
+            return;
+          }
+          if(node.Devices==null){
+            console.log("Devices is null");
+            return;
+          }
 
           var devices = [];
           for (var j = 0; j < node.Devices.length; j++) {
@@ -421,6 +566,15 @@ socket.on('pong',function(data){
           socket.emit(Events.Emit.Node_devices,devices);
    });
   socket.on(Events.On.Node_power,function(data){
+
+      if(socket==null){
+        console.log("socket is null");
+        return;
+      }
+      if(socket.Hub==null){
+        console.log("Hub is null");
+        return;
+      }
 
         console.log("NODE POWER");
         console.log(data);
@@ -444,6 +598,10 @@ socket.on('pong',function(data){
 
             var node = socket.Hub.getNode(data.nId);
           //  node.addDevice(new Device(data.dId,"IR"));
+          if(node==null){
+              console.log("node is null");
+              return;
+          }
 
             socket.Hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_power);
           break;
@@ -451,6 +609,16 @@ socket.on('pong',function(data){
    });
 
   socket.on(Events.On.Node_IR_delete,function(data){
+
+      if(socket==null){
+        console.log("socket is null");
+        return;
+      }
+      if(socket.Hub==null){
+        console.log("hub is null");
+        return;
+      }
+
 
         // console.log("NODE POWER");
         // console.log(data);
@@ -470,6 +638,11 @@ socket.on('pong',function(data){
 //            { nId: '4234567890', success: 'true', dId: '11' }
             var response_obj = {};
             var node = socket.Hub.getNode(data.nId);
+
+            if(node==null){
+              console.log("nodes is null");
+              return;
+            }
             var device_data = {};
             device_data['success'] = "true";
             device_data['type'] = "IR";
@@ -485,7 +658,24 @@ socket.on('pong',function(data){
   socket.on(Events.On.Node_delete,function(data){
     //removeNode
 
+    if(socket==null){
+      console.log("socket is null");
+      return;
+    }
+    if(socket.Hub==null){
+      console.log("hub is null");
+      return;
+    }
     var node  = socket.Hub.getNode(data.nodeId);
+
+    if(node==null){
+      console.log("node is null");
+      return;
+    }
+
+
+
+
     socket.Hub.removeNode(node);
     Database.removeNode({hubid:socket.Hub.uniqueID(),nodeid: data.nodeId});
 
@@ -514,6 +704,20 @@ socket.on('pong',function(data){
   socket.on(Events.On.disconnect ,function(data){
     //  console.log(socket.DeviceType);
     // console.log(data);
+
+    if(socket==null){
+      console.log("socket is null");
+      return;
+    }
+    if(socket.Hub==null){
+      console.log("hub is null");
+      return;
+    }
+    if(socket.Hub.MobileDevices==null){
+      console.log("MobileDevices is null");
+      return;
+    }
+
     switch(socket.DeviceType){
 
       case DeviceType.Hub:
