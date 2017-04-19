@@ -7,50 +7,39 @@ var typeOf = require('typeof');
 var net = require('net');
 var fs = require("fs");
 var mongoose = require('mongoose');
+var mosca = require('mosca');
 
-// fs.readdir('/Users/rajivaneja/Downloads/export', (err, files) => {
-//   var prefix= "ic_device_";
-//   var index=0;
-//   files.forEach(file => {
 
-//     var new_file_name = prefix+index;
-//     console.log(file);
-//     fs.rename(file, '/Users/rajivaneja/Desktop/remaned_file/'+new_file_name+'.xml', function(err) {
-//       if ( err ) console.log('ERROR: ' + err);
-//       console.log("task completed");
-//       index++;
-//     });
-//   });
-// })
-// var path = '/Users/rajivaneja/Downloads/export';
-// fs.readdir(path, function(err, items) {
-//     console.log(items);
- 
-//     for (var i=0; i<items.length; i++) {
-//         console.log(items[i]);
-//         fs.readFile(items[i], 'utf8', function (err,data) {
-//           if (err) {
-//             return console.log(err);
-//           }
-//           console.log(data);
-//         });
-//         break;
-//     }
-// });
+var ascoltatore = {
+    //using ascoltatore
+    type: 'mongo',
+    url: 'mongodb://localhost:27017/mqtt',
+    pubsubCollection: 'ascoltatori',
+    mongo: {}
+};
 
-// Object.defineProperty(Object.prototype, 'isEmpty', {
-//   enumerable: false,
-//   value: () => 1
-// });
+var settings = {
+    port: 1883,
+    backend: ascoltatore
+};
 
-// Object.prototype.isEmpty = function() {
-//     for(var key in this) {
-//         if(this.hasOwnProperty(key))
-//             return false;
-//     }
-//     return true;
-// }
+var server = new mosca.Server(settings);
 
+server.on('clientConnected', function(client) {
+    console.log('client connected', client.id);
+});
+
+// fired when a message is received
+server.on('published', function(packet, client) {
+    console.log('Published', packet.payload);
+});
+
+server.on('ready', setup);
+
+// fired when the mqtt server is ready
+function setup() {
+    console.log('Mosca server is up and running');
+}
 
 
 //classes 
@@ -65,7 +54,6 @@ var DeviceType = {Mobile:"Mobile",Hub:"Hub"};
 connections = [];
 // var db = new Database();
 http.listen(3000, function(){
-
   console.log('listening on port :3000');
 });
 
@@ -86,7 +74,7 @@ stdin.on('data', function(chunk) {
           var response_obj = {};
           response_obj['success'] = "true";
           response_obj['message'] = ['Circular Blue','mightycartoon'] ;
-        
+
           io.emit(Events.Emit.wifi_details ,{ message: JSON.stringify(response_obj) } );
   }else if(chunk.toString().trim() ==='addNode'){
 
@@ -143,6 +131,7 @@ io.on('connection', function(socket){
   console.log("socket ID : " + socketId);
   console.log("Client IP : " + clientIp);
 
+
     socket.on("packet", function(type, data) {
     console.log("received ping");
 });
@@ -175,9 +164,6 @@ socket.on('pong',function(data){
         var response_obj = {};
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
-
-
-
 
           socket.Hub.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
         break;
@@ -214,13 +200,6 @@ socket.on('pong',function(data){
     if(node ==  null){
       return;
     }
-
-    // var response_obj = {};
-    // response_obj['success'] = "true";
-    // response_obj['message'] = " " 
-
-
-
 
     socket.emit(Events.Emit.Node_info,node);
   });
@@ -265,10 +244,7 @@ socket.on('pong',function(data){
           response_obj['success'] = "true";
           response_obj['message'] = "Hub Added";
 
-          //CHECK
-          // if(socket.DeviceType==null){
-          //     return null;
-          // }
+
           socket.DeviceType = DeviceType.Hub; 
           socket.Hub = hub_temp;
 
@@ -653,9 +629,6 @@ socket.on('pong',function(data){
         return;
       }
 
-
-        // console.log("NODE POWER");
-        // console.log(data);
         switch(socket.DeviceType){
           case DeviceType.Mobile:
             console.log("Mobile : ");
@@ -721,23 +694,25 @@ socket.on('pong',function(data){
 
 
 
-  socket.on(Events.On.dummy,function(data){
-    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
- //   socket.emit(Events.On.dummy,data);
-  });
+    socket.on(Events.On.dummy,function(data){
 
- //    socket.on('message',function(data){
- //    console.log("HUB : " + socket.Hub.uniqueID() + " is connected");
- // //   socket.emit(Events.On.dummy,data);
- //  });
+        console.log("dummy -> received : ");
+        console.log(data);
+
+        if(socket.Hub==null){
+            data["success"] = "false";
+        }
+        socket.emit(Events.On.dummy,data);
+        console.log("dummy -> sent : ");
+        console.log(data);
+    });
+
    socket.on('check_alive',function(data){
     console.log("data : " + data);
     // socket.Hub.checkAlive(true);    
   });
 
   socket.on(Events.On.disconnect ,function(data){
-    //  console.log(socket.DeviceType);
-    // console.log(data);
 
     if(socket==null){
       console.log("socket is null");
@@ -763,28 +738,11 @@ socket.on('pong',function(data){
         }else if(data == "ping timeout"){
 
           console.log("ping timeout for Hub");
-          // socket.Hub.emit('check_alive','There?');
-          socket.emit('check_alive','There?');
-          // socket.Hub.checkAlive(false);
-          // socket.socket.reconnect();
-    
-
-          setTimeout(function(Hub){
-            console.log('CHECK ALIVE : ' + Hub.uniqueID());
-            if(!Hub.isAlive()){
-              console.log("Hub is Dead : " + Hub.uniqueID())
-               HubController.RemoveHub(Hub);
-            }else{
-              console.log("Hub is Alive : " + Hub.uniqueID());
-            }
-
-          }, 5000,socket.Hub);
 
         }else{
 
         }
         console.log("TIME : " + socket.Hub.getDateTime());
-        // socket.Hub.getDateTime();
             break;
         case DeviceType.Mobile:
 

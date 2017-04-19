@@ -9,19 +9,7 @@ module.exports = function Hub(uniqueID,socket){
 	this.wifi_details;
 	this.socket = socket;
 	this.check_alive;
-	    
-	 console.log("HUB.js SOCKET ID : " + socket.id);                      
-
-	 this.addNode = function(name,type){
-	 	var node = new Node(name,type);
-		this.Nodes.push(node);
-		return node;
-	};
-
-	this.nodeCount = function(){
-		return this.Nodes.length;
-	};
-
+	
 	this.removeNode = function(node){
 		this.Nodes.splice(this.Nodes.indexOf(node), 1);
 	};
