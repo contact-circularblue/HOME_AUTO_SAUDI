@@ -208,6 +208,15 @@ socket.on('pong',function(data){
   socket.on(Events.On.chat_message, function(msg){
   	console.log('message: ' + msg);
   	io.emit('chat message', msg);
+      var message = {
+          topic: 'inTopic',
+          payload: msg, // or a Buffer
+          qos: 0, // 0, 1, or 2
+          retain: false // or true
+      };
+      server.publish(message, function() {
+          console.log("Out : " + message.payload.toString());
+      });
   });
 
   socket.on(Events.On.addDevice, function(data,callback){ 
