@@ -31,6 +31,7 @@ module.exports = {
 	},
 
 	GetHub : function(uniqueID){
+
    		return (Hubs.find(o => o.uniqueID() === uniqueID));
 	},
 

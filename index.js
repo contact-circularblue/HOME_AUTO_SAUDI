@@ -99,10 +99,10 @@ app.get('/', function(req, res){
 
 
 io.on('ping',function(data){
-  console.log('ping  ' + data );
+  console.log('ping  ' + data);
 });
 io.on('pong',function(data){
-  console.log('pong  ' + data );
+  console.log('pong  ' + data);
 });
 
 ///
@@ -116,8 +116,6 @@ io.on('connection', function(socket){
 
   var socketId = socket.id;
   var clientIp = socket.request.connection.remoteAddress;
-
-
   //On connection request
   var NewObject = {};
   NewObject['success'] = "true";
@@ -131,8 +129,8 @@ io.on('connection', function(socket){
 
 
     socket.on("packet", function(type, data) {
-    console.log("received ping");
-});
+        console.log("received ping");
+    });
 
 socket.on("packetCreate", function(type, data) {
     console.log("sending pong");
@@ -224,9 +222,6 @@ socket.on('pong',function(data){
       return;
     }
 
-
-
-
     // console.log(data);
     var deviceType,uniqueID;  
     deviceType = data.deviceType;
@@ -315,34 +310,49 @@ socket.on('pong',function(data){
       case DeviceType.Mobile:
         var response_obj = {};
 
+
+
+
         console.log('Mobile connected');
         socket.DeviceType = DeviceType.Mobile;
+          var message_isAvailable = {
+              topic: uniqueID+"/available",
+              payload: msg, // or a Buffer
+              qos: 0, // 0, 1, or 2
+              retain: false // or true
+          };
 
-          if(HubController.HubExists(uniqueID)){
-               console.log("Hub Exists");
-               var Hub_temp = HubController.GetHub(uniqueID);
-               socket.Hub = Hub_temp;
-               if(socket.Hub==null){
-                 console.log("Hub is null");
-                 return;
-               }
-               if(Hub_temp.addMobileDevice(socket)==1){
-                  console.log("Mobile device added");
-                 // callback(true);
-                  socket.DeviceType = DeviceType.Mobile;
-                  response_obj['success'] = "true";
-                  response_obj['message'] = "Mobile Added";
-               }else{
-                  response_obj['success'] = "false";
-                  response_obj['message'] = "Mobile Not Added";                
-               }
-              // mobiles.push(socket);
-          }else{
-              //  callback(false);
-                response_obj['success'] = "false";
-                response_obj['message'] = "Hub not found";
-          }
-          socket.emit(Events.Emit.addDevice,response_obj);
+
+          server.publish(message_isAvailable, function() {
+              console.log("Out : " + message_isAvailable.payload.toString());
+          });
+
+
+          // if(HubController.HubExists(uniqueID)){
+          //      console.log("Hub Exists");
+          //      var Hub_temp = HubController.GetHub(uniqueID);
+          //      socket.Hub = Hub_temp;
+          //      if(socket.Hub==null){
+          //        console.log("Hub is null");
+          //        return;
+          //      }
+          //      if(Hub_temp.addMobileDevice(socket)==1){
+          //         console.log("Mobile device added");
+          //        // callback(true);
+          //         socket.DeviceType = DeviceType.Mobile;
+          //         response_obj['success'] = "true";
+          //         response_obj['message'] = "Mobile Added";
+          //      }else{
+          //         response_obj['success'] = "false";
+          //         response_obj['message'] = "Mobile Not Added";
+          //      }
+          //     // mobiles.push(socket);
+          // }else{
+          //     //  callback(false);
+          //       response_obj['success'] = "false";
+          //       response_obj['message'] = "Hub not found";
+          // }
+          // socket.emit(Events.Emit.addDevice,response_obj);
           break;
 
         }
