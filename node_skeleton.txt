@@ -2,7 +2,7 @@
  {
         "Nodetype" : "4",
         "Nodeid" : "4234567890",
-        "Hubid" : "0000000002",
+        "Hubid" : "002",
         "irDevices" : [ ],
         "devices" : [
                 {
@@ -16,12 +16,10 @@
                 {
                         "id" : "3",
                         "state" : true,
-                        "_id" : ObjectId("58eb768e8620dc5b228fd762")
                 },
                 {
                         "id" : "4",
                         "state" : true,
                 }
-        ],
-        "__v" : 0
+        ]
 })

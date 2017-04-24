@@ -25,13 +25,251 @@ var settings = {
 
 var server = new mosca.Server(settings);
 
+exports.server  = server;
+
+
 server.on('clientConnected', function(client) {
     console.log('client connected', client.id);
+    var hub = HubController.AddHub(client.id,null);
+
+    mongoose.model('nodes').find({Hubid: client.id},function(err,docs){
+
+        for(var docs_i=0; docs_i < docs.length; docs_i++){
+
+            var node_docs = docs[docs_i];
+            var nodeId   = node_docs.Nodeid;
+            var hubId    = node_docs.Hubid;
+            var nodeType = node_docs.Nodetype;
+            var devices =  node_docs.devices;
+            var irDevices = node_docs.irDevices;
+
+            console.log("adding node to Hub");
+            //
+            var node = hub.addNode(nodeId,nodeType);
+
+            //CHECK
+            if(node==null){
+                return;
+            }
+            if((devices.length!=0) || devices!=null){
+                node.removeDevices();
+            }
+
+            for(var i = 0; i < devices.length; i++){
+                var device = new Device(devices[i].id,"Default");
+                device.setCurrentState(devices[i].state);
+                node.addDevice(device);
+            }
+
+
+
+            for (var i = 0; i < irDevices.length; i++) {
+                node.addDevice(new Device(irDevices[i].id,"IR"));
+            }
+        }
+    });
+
 });
 
 // fired when a message is received
 server.on('published', function(packet, client) {
-    console.log('Published', packet.payload.toString());
+
+
+    console.log("RAW : " + " PayLoad: ", packet.payload.toString() + "  " + " Topic: " + packet.topic);
+
+
+    var payload = packet.payload.toString();
+    var topic =  packet.topic;
+
+    if(topic.charAt(0) != '$'  ){
+        if(topic != "outTopic" ) {
+
+            console.log("DATA : " + topic);
+
+            var data = topic.split('/');
+            for(var i=0;i<data.length;i++){
+
+                console.log("DATA : ["+ i + "] " + data[i]);
+            }
+
+            if(client==null){
+                console.log("echo to server")
+                return;
+            }
+            switch (data[1]){
+
+                case "Node_power":
+
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var power  = JSON.parse(packet.payload.toString().trim()).power;
+                    var hubId  = data[0];
+
+
+                    var response_obj = {};
+                    response_obj['nodeId']   = nodeId;
+                    response_obj['power']    = power;
+
+
+                    var hub = HubController.GetHub(hubId);
+
+                    if(hub==null){
+                        console.log("hub is null");
+                        return;
+                    }
+
+                    var node = hub.getNode(nodeId);
+                    if(node==null){
+                        console.log("node is null");
+                        return;
+                    }
+                    hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_power);
+                    break;
+                case "Node_change":
+
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var deviceId  = JSON.parse(packet.payload.toString().trim()).dId;
+                    var deviceState  = JSON.parse(packet.payload.toString().trim()).dState;
+                    var hubId  = data[0];
+
+                    var response_obj = {};
+                    response_obj['nodeId'] = nodeId;
+                    response_obj['deviceId'] = deviceId;
+                    response_obj['deviceState'] = deviceState;
+
+                    var hub = HubController.GetHub(hubId);
+
+                    if(hub==null){
+                        console.log("hub is null");
+                        return;
+                    }
+
+                    var node =  hub.getNode(nodeId);
+
+                    if(node == null){
+                        console.log("node is null");
+                        return;
+                    }
+
+                    console.log("node type " + node.type());
+                    var node_type = node.type();
+                    console.log("device id " + deviceId);
+                    console.log("device State " + deviceState);
+
+                    if(node_type >= deviceId){
+
+                        var device = node.getDevice(deviceId);
+                        if(device==null){
+                            console.log("device is null");
+                            return;
+                        }
+                        device.setCurrentState(deviceState);
+
+                        var Hubid_ = hub.uniqueID();
+                        var deviceId_ = deviceId;
+                        var state_ = (deviceState == 'true');
+
+                        console.log("Device state" + state_);
+                        Database.setDeviceState({hubid:Hubid_,deviceId:deviceId_,state:state_});
+
+                    }
+                    hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_change);
+                    break;
+                case "testTopic":
+                    break;
+                case "wifi_details":
+                    break;
+                case "add_Node":
+
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var type  = JSON.parse(packet.payload.toString().trim()).type;
+                    var hubId  = data[0];
+                    var hub = HubController.GetHub(hubId);
+                    if(hub==null){
+                        console.log("nodes is null");
+                        return;
+                    }
+                    var node = hub.addNode(nodeId,type);
+                    if(node==null){
+                        console.log("nodes is null");
+                        return;
+                    }
+                    Database.addNode({hubid: hub.uniqueID(), node: node});
+                    hub.broadCastToMobieDevices({'nodeId':node.id(),'type':node.type()},Events.Emit.add_Node);
+                    break;
+                case "dummy":
+                    break;
+                case "Node_IR_delete":
+
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var deviceId  = JSON.parse(packet.payload.toString().trim()).dId;
+                    var hubId  = data[0];
+                    var hub = HubController.GetHub(hubId);
+
+                    var response_obj = {};
+                    var node = hub.getNode(nodeId);
+
+                    if(node==null){
+                        console.log("nodes is null");
+                        return;
+                    }
+                    var device_data = {};
+                    device_data['success'] = "true";
+                    device_data['type'] = "IR";
+                    device_data['deviceId'] = deviceId;
+
+                    node.removeDevice(device_data);
+                    Database.removeDevice({nodeid: nodeId,hubid: hub.uniqueID(),deviceType : "IR",deviceId:deviceId});
+                    hub.broadCastToMobieDevices(device_data,Events.Emit.Node_IR_delete);
+                    break;
+                case "addIRDevice":
+
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var deviceId  = JSON.parse(packet.payload.toString().trim()).dId;
+                    var success  = JSON.parse(packet.payload.toString().trim()).s;
+
+                    console.log("SUCCESS : " + success);
+
+                    if(success=="t"){
+                        success = "true"
+                    }else{
+                        success = "false"
+                    }
+
+                    var hubId  = data[0];
+                    var hub = HubController.GetHub(hubId);
+
+                    var response_obj = {};
+                            response_obj['nodeId']      = nodeId;
+                            response_obj['deviceId']    = deviceId;
+                            response_obj['deviceState'] = "true";
+                            response_obj['success']     = success;
+                            console.log("deviceId :" + deviceId);
+
+                           if(success=="true"){
+
+                                var node = hub.getNode(nodeId);
+                                if(node==null){
+                                    console.log("node is null");
+                                    return;
+                                }
+                                node.addDevice(new Device(deviceId,"IR"));
+                                Database.addDevice({node: node,hubid: hub.uniqueID(),deviceType : "IR",deviceId: deviceId});
+                            }
+                            hub.broadCastToMobieDevices(response_obj,Events.Emit.addIRDevice);
+                    break;
+                case "wifi_details_rec":
+
+                    var hubId  = data[0];
+                    var hub = HubController.GetHub(hubId);
+                    console.log("wifi_details_rec");
+                    console.log(payload);
+                    response_obj={};
+                    response_obj['message'] = payload;
+                    hub.broadCastToMobieDevices(response_obj,Events.On.wifi_details)
+                    break;
+            }
+        }
+    }
 });
 
 server.on('ready', setup);
@@ -161,13 +399,11 @@ socket.on('pong',function(data){
           response_obj['success'] = "true";
           response_obj['message'] = " " ;
 
-          socket.Hub.emit(Events.Emit.add_Node,{ message: JSON.stringify(response_obj) } );
+          socket.Hub.emit(Events.Emit.add_Node,response_obj);
         break;
       case DeviceType.Hub:
       console.log("Hub :");
       console.log(data);
-
-
 
       var node = socket.Hub.addNode(data.nodeId,data.type);
       //DATABASE
@@ -309,50 +545,33 @@ socket.on('pong',function(data){
 
       case DeviceType.Mobile:
         var response_obj = {};
-
-
-
-
-        console.log('Mobile connected');
-        socket.DeviceType = DeviceType.Mobile;
-          var message_isAvailable = {
-              topic: uniqueID+"/available",
-              payload: msg, // or a Buffer
-              qos: 0, // 0, 1, or 2
-              retain: false // or true
-          };
-
-
-          server.publish(message_isAvailable, function() {
-              console.log("Out : " + message_isAvailable.payload.toString());
-          });
-
-
-          // if(HubController.HubExists(uniqueID)){
-          //      console.log("Hub Exists");
-          //      var Hub_temp = HubController.GetHub(uniqueID);
-          //      socket.Hub = Hub_temp;
-          //      if(socket.Hub==null){
-          //        console.log("Hub is null");
-          //        return;
-          //      }
-          //      if(Hub_temp.addMobileDevice(socket)==1){
-          //         console.log("Mobile device added");
-          //        // callback(true);
-          //         socket.DeviceType = DeviceType.Mobile;
-          //         response_obj['success'] = "true";
-          //         response_obj['message'] = "Mobile Added";
-          //      }else{
-          //         response_obj['success'] = "false";
-          //         response_obj['message'] = "Mobile Not Added";
-          //      }
-          //     // mobiles.push(socket);
-          // }else{
-          //     //  callback(false);
-          //       response_obj['success'] = "false";
-          //       response_obj['message'] = "Hub not found";
-          // }
-          // socket.emit(Events.Emit.addDevice,response_obj);
+          console.log('Mobile connected');
+ //          if(HubController.HubExists(uniqueID)){
+          if(server.clients[uniqueID]!=undefined){
+               console.log("Hub Exists");
+               var Hub_temp = HubController.GetHub(uniqueID);
+               socket.Hub = Hub_temp;
+               if(socket.Hub==null){
+                 console.log("Hub is null");
+                 return;
+               }
+               if(Hub_temp.addMobileDevice(socket)==1){
+                  console.log("Mobile device added");
+                 // callback(true);
+                  socket.DeviceType = DeviceType.Mobile;
+                  response_obj['success'] = "true";
+                  response_obj['message'] = "Mobile Added";
+               }else{
+                  response_obj['success'] = "false";
+                  response_obj['message'] = "Mobile Not Added";
+               }
+              // mobiles.push(socket);
+          }else{
+              //  callback(false);
+                response_obj['success'] = "false";
+                response_obj['message'] = "Hub not found";
+          }
+          socket.emit(Events.Emit.addDevice,response_obj);
           break;
 
         }
@@ -368,12 +587,11 @@ socket.on('pong',function(data){
     }
 
 
-
     socket.Hub.setWifiDetails(data);
     var response_obj = {};
     response_obj['success'] = "true";
     response_obj['message'] = [data.wifi_name,data.wifi_pass] ;
-    socket.Hub.emit(Events.Emit.wifi_details ,{ message: JSON.stringify(response_obj) } );
+    socket.Hub.emit(Events.Emit.wifi_details ,response_obj);
     console.log('wifi_details');
     console.log(response_obj);
   });
@@ -399,9 +617,6 @@ socket.on('pong',function(data){
     if(socket.Hub==null){
       return;
     }
-
-
-
         console.log(data);
         switch(socket.DeviceType){
           case DeviceType.Mobile:
@@ -412,7 +627,7 @@ socket.on('pong',function(data){
               response_obj['nId'] = data.nodeId;
               response_obj['dId'] = data.deviceId;
               response_obj['dState'] = data.deviceState;
-              socket.Hub.emit(Events.Emit.Node_change,{ message: JSON.stringify(response_obj) });
+              socket.Hub.emit(Events.Emit.Node_change,response_obj);
           break;
           case DeviceType.Hub:
             console.log("Hub : ");
@@ -484,7 +699,7 @@ socket.on('pong',function(data){
               var response_obj = {};
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
-              socket.Hub.emit(Events.Emit.addIRDevice,{ message: JSON.stringify(response_obj) });
+              socket.Hub.emit(Events.Emit.addIRDevice,response_obj);
           break;
           case DeviceType.Hub:
             console.log("Hub : ");
@@ -538,9 +753,9 @@ socket.on('pong',function(data){
    socket.on(Events.On.Node_devices_IR,function(data){
 
     if(socket==null){
-      console.log("socket is null");
-      return;
-    }
+           console.log("socket is null");
+           return;
+       }
     if(socket.Hub==null){
       console.log("Hub is null");
       return;
@@ -590,6 +805,7 @@ socket.on('pong',function(data){
           }
           // console.log("Node devices : ")
           // console.log(node.getDevices());
+
           socket.emit(Events.Emit.Node_devices,devices);
    });
   socket.on(Events.On.Node_power,function(data){
@@ -613,7 +829,7 @@ socket.on('pong',function(data){
               response_obj['success'] = "true";
               response_obj['nId'] = data.nodeId;
 
-              socket.Hub.emit(Events.Emit.Node_power,{ message: JSON.stringify(response_obj) });
+              socket.Hub.emit(Events.Emit.Node_power,response_obj);
           break;
           case DeviceType.Hub:
             console.log("Hub : ");
@@ -654,7 +870,7 @@ socket.on('pong',function(data){
               response_obj['success'] = "true";
               response_obj['nId']     = data.nodeId;
               response_obj['dId']     = data.deviceId;
-              socket.Hub.emit(Events.Emit.Node_IR_delete,{ message: JSON.stringify(response_obj) });
+              socket.Hub.emit(Events.Emit.Node_IR_delete,response_obj);
           break;
           case DeviceType.Hub:
             console.log("Hub : ");
@@ -751,7 +967,6 @@ socket.on('pong',function(data){
 
           console.log("transport close for Hub");
 
-            // HubController.RemoveHub(socket.Hub.uniqueID());
         }else if(data == "ping timeout"){
 
           console.log("ping timeout for Hub");
@@ -764,17 +979,14 @@ socket.on('pong',function(data){
         case DeviceType.Mobile:
 
         if(data == "transport close"){
-
           console.log("transport close for Mobile");
-
         }else if(data == "ping timeout"){
-
           console.log("ping timeout for Mobile");
         }
 
-        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
+        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length);
         socket.Hub.MobileDevices.splice(socket,1);
-        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length)
+        console.log("Mobile Deives length" + socket.Hub.MobileDevices.length);
         console.log("TIME : " + socket.Hub.getDateTime());
         break;
     }

@@ -1,5 +1,8 @@
 var Node = require('./Node');
 var DeviceState = {Online:"Online",Offline:"Offline"};
+var mosca = require('mosca');
+var global_index = require('./index');
+
 
 module.exports = function Hub(uniqueID,socket){
 	this.uniqueID_ = uniqueID;
@@ -9,8 +12,20 @@ module.exports = function Hub(uniqueID,socket){
 	this.wifi_details;
 	this.socket = socket;
 	this.check_alive;
-	
-	this.removeNode = function(node){
+
+    this.addNode = function(name,type){
+        var node = new Node(name,type);
+        this.Nodes.push(node);
+        return node;
+    };
+
+    this.nodeCount = function(){
+        return this.Nodes.length;
+    };
+
+
+
+    this.removeNode = function(node){
 		this.Nodes.splice(this.Nodes.indexOf(node), 1);
 	};
 
@@ -77,17 +92,30 @@ module.exports = function Hub(uniqueID,socket){
 
 	this.broadCastToMobieDevices = function(data,event){
 		console.log("BroadCast To Mobie Devices");
-		// console.log("MobileDevices length" + this.MobileDevices.length);
+
 		for (var i = 0; i < this.MobileDevices.length; i++){
-			// console.log(this.MobileDevices[i].id);
 			this.MobileDevices[i].emit(event,data);
 		}
 	};
 	this.emit = function(event,message){
 
-	       console.log("SOCKET ID : " + socket.id);	
-	       console.log(message);	  
-		    socket.emit(event,message);
+	       // console.log("SOCKET ID : " + socket.id);
+	       // console.log(message);
+		    // socket.emit(event,message);
+        console.log("Publish to Hub");
+
+		var  topic = this.uniqueID_+"/"+event;
+
+        var message_ = {
+            topic: topic,
+            payload:JSON.stringify(message), // or a Buffer
+            qos: 0, // 0, 1, or 2
+            retain: false // or true
+        };
+
+        global_index.server.publish(message_, function() {
+            console.log(message_.payload);
+        });
 	};
 
 	this.getNode =function(nodeId){

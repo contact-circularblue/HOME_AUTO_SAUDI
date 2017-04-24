@@ -82,9 +82,12 @@ module.exports = function Node(id,type) {
 
 
 	this.getDevice =function(deviceId){
-		
+		console.log("deviceId : " + deviceId + "tpye : " + typeof deviceId);
+		console.log("__________________________________________________");
 		for (var i = 0; i < this.Devices.length; i++) {
-			if(this.Devices[i].id() == deviceId){
+            console.log("deviceId : " + this.Devices[i].id() + "tpye : " + typeof this.Devices[i].id());
+
+            if(this.Devices[i].id() == deviceId){
 				return this.Devices[i];
 			}
 		}

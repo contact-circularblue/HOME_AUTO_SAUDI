@@ -2,16 +2,14 @@ var Hub = require('./Hub');
 Hubs = [];
 module.exports = {
 
+
 	AddHub : function(uniqueID_,socket){
 
 		var hub = new Hub(uniqueID_,socket);
 		this.RemoveDuplicates(uniqueID_,hub);
 		Hubs.push(hub);
-		// console.log("Hub Added ("+__filename+")" );
-
 		return hub;
 	},
-
 	PrintHubs : function(){
 
 		console.log("Total Hubs connected : " + Hubs.length);
