@@ -180,7 +180,7 @@ server.on('published', function(packet, client) {
                     break;
                 case "add_Node":
 
-                    var nodeId = JSON.parse(packet.payload.toString().trim()).nId;
+                    var nodeId = JSON.parse(packet.payload.toString().trim()).nodeId;
                     var type  = JSON.parse(packet.payload.toString().trim()).type;
                     var hubId  = data[0];
                     var hub = HubController.GetHub(hubId);
@@ -188,6 +188,7 @@ server.on('published', function(packet, client) {
                         console.log("nodes is null");
                         return;
                     }
+                    console.log("NodeId = " + nodeId);
                     var node = hub.addNode(nodeId,type);
                     if(node==null){
                         console.log("nodes is null");
@@ -745,6 +746,7 @@ socket.on('pong',function(data){
         }
         var nodes = []; 
         for (var i = 0; i < socket.Hub.Nodes.length; i++) {
+
             nodes.push({'nodeId':socket.Hub.Nodes[i].id(),'type':socket.Hub.Nodes[i].type()});
         }
         socket.emit(Events.Emit.Node_all,nodes);
