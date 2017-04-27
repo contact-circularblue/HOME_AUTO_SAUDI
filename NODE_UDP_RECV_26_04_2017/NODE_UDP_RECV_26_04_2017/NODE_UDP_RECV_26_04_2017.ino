@@ -1,7 +1,12 @@
+#include <Arduino.h>
+
 #include <ESP8266WiFi.h>
 #include <WiFiUDP.h>
 #include <EEPROM.h>
 
+
+String Node_Name = "4234567890";
+char ReplyBuffer[] = "hub:4234567890,ack"; // a string to send back
 
 // wifi connection variables
 char ssid_1[25] = "";
@@ -25,9 +30,9 @@ WiFiUDP UDP;
 boolean udpConnected = false;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
 //char ReplyBuffer[] = "acknowledged"; // a string to send back
-char ReplyBuffer[] = "hub:jackhammer,ack"; // a string to send back
 
-String Node_Name = "jackhammer";
+
+
 String Check_Name = "";
 String Parse_State = "";
 String data_from_switch = "";
@@ -151,5 +156,3 @@ void loop()
     delay(1);
   }
 }
-
-

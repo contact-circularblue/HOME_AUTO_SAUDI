@@ -9,8 +9,6 @@
 
 //SoftwareSerial node_add(8, 9);
 
-String NODE_ID="4234567891";
-
 LinkedList<int> myList = LinkedList<int>();
 
 #define ARDUINOPIN_1 10
@@ -179,8 +177,7 @@ void loop() {
 
 
       delay(100);
-      Serial.print("ID:");
-      Serial.print(NODE_ID);
+      Serial.print("ID:4234567890");
 
       delay(300);
       if (Serial.find("SSID:"))

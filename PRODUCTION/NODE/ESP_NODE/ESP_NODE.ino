@@ -1,7 +1,17 @@
+#include <Arduino.h>
+#include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUDP.h>
 #include <EEPROM.h>
 
+
+//CHANGE THESE FOR EACH NODE
+String Node_Name = "4234567891";
+char ReplyBuffer[] = "hub:4234567891,ack";
+//----------------------------------------
+
+
+char buf[100];
 
 // wifi connection variables
 char ssid_1[25] = "";
@@ -9,15 +19,9 @@ char password_1[25] = "";
 int ssid_length = 0;
 int password_length = 0;
 
-//const char* ssid = "Circular Blue";
-//const char* password = "mightycartoon";
+const char* ssid = "Circular Blue";
+const char* password = "mightycartoon";
 boolean wifiConnected = false;
-
-//IPAddress ip(192, 168, 1, 200); //Node static IP
-//IPAddress gateway(192, 168, 1, 1);
-//IPAddress subnet(255, 255, 255, 0);
-//
-//IPAddress IP_hub(192, 168, 1, 200);
 
 // UDP variables
 unsigned int localPort = 80;
@@ -25,9 +29,9 @@ WiFiUDP UDP;
 boolean udpConnected = false;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
 //char ReplyBuffer[] = "acknowledged"; // a string to send back
-char ReplyBuffer[] = "hub:jackhammer,ack"; // a string to send back
 
-String Node_Name = "jackhammer";
+
+
 String Check_Name = "";
 String Parse_State = "";
 String data_from_switch = "";
@@ -39,6 +43,8 @@ IPAddress IP_hub;
 IPAddress subnet;
 
 byte octate1, octate2, octate3, octate4;
+
+
 
 void setup()
 {
@@ -53,35 +59,9 @@ void setup()
 
   delay(1000);
 
-//  EEPROM.write(200, 0); // Remove this in final product
-//  delay(100);
-//  EEPROM.commit();
-
-
-
-  //  while(1)
-  //  {
-  //    if(Serial.available())
-  //    Serial.print(char(Serial.read()));
-  //    delay(10);
-  //  }
-
-  //  while (Serial.available())
-  //  {
-  //    Serial.read();
-  //  }
-
-  // Initialise wifi connection
-  // connectWifi();
-
-  // only proceed if wifi connection successful
-  //  if (wifiConnected) {
-  //    udpConnected = connectUDP();
-  //    if (udpConnected) {
-  //      // initialise pins
-  //      Serial.println("UDP connected");
-  //    }
-  //  }
+  //  EEPROM.write(200, 0); // Remove this in final product
+  //  delay(100);
+  //  EEPROM.commit();
 }
 
 void loop()
@@ -153,3 +133,8 @@ void loop()
 }
 
 
+char* stringToCharArray(String str, char *buffer)
+{
+  str.toCharArray(buffer, 100);
+  return buffer;
+}

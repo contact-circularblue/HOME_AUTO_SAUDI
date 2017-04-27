@@ -1,0 +1,281 @@
+#include <Arduino.h>
+
+/*
+    This sketch sends data via HTTP GET requests to data.sparkfun.com service.
+
+    You need to get streamId and privateKey at data.sparkfun.com and paste them
+    below. Or just customize this script to talk to other HTTP servers.
+
+*/
+#include <ESP8266WiFi.h>
+#include <EEPROM.h>
+#include <SocketIOClient.h>
+#include <ArduinoJson.h>
+
+DynamicJsonBuffer jsonBuffer;
+
+SocketIOClient client;
+
+char *ssid     = "samtech";
+char *password = "homeautomation";
+
+//char* ssid     = "iPhone";
+//char* password = "ambition";
+
+//char* ssid     = "Circular Blue";
+//char* password = "mightycartoon";
+
+char host[] = "104.131.44.88";
+// char host[] = "192.168.1.9";
+int port = 1883;
+
+extern bool socket_connected;
+extern int flag;
+
+extern String rcvd_msg_full;
+extern String RID;
+extern String Rname;
+extern String Rcontent;
+
+String message = "message";
+String success = "success";
+String message_val = "";
+//String message_val_t = "";
+String success_val = "";
+String data0_val = "";
+String data1_val = "";
+String nodeId = "";
+String deviceId = "";
+String deviceState = "";
+
+bool hub_connected = false;
+
+
+//unsigned long previousMillis = 0;
+//long interval = 5000;
+//unsigned long lastreply = 0;
+//unsigned long lastsend = 0;
+
+unsigned long previousMillis = 0;        // will store last time LED was updated
+
+// constants won't change :
+const long interval = 900000;           // interval at which to send dummy packet
+
+
+String json_add_hub = "";
+String json_add_node = "";
+void setup() {
+
+  /*
+     4->RED
+     2->BLUE
+     12->GREEN
+     14->YELLOW
+  */
+
+  pinMode(4, OUTPUT);
+  pinMode(2, OUTPUT);
+  pinMode(14, OUTPUT);
+  pinMode(12, OUTPUT);
+
+  status_LEDs(0);
+
+
+
+  JsonObject& root_hub_add = jsonBuffer.createObject();
+  struct DeviceType_ {
+    String Hub = "Hub";
+  } DeviceType;
+
+  root_hub_add["deviceType"] = DeviceType.Hub;
+  root_hub_add["uniqueID"] = "1236";
+
+
+  //    Serial.print("printing to string");
+  root_hub_add.printTo(json_add_hub);
+
+  Serial.begin(9600);
+  delay(10);
+  EEPROM.begin(512);
+//
+//EEPROM.write(200,0);
+//EEPROM.commit();
+
+  if (EEPROM.read(200) == 1)
+  {
+    for (int i = 0; i <= EEPROM.read(0); i++)
+    {
+      ssid[i] = EEPROM.read(1 + i);
+    }
+    Serial.print("EEPROM_ssid_2 =");
+    Serial.println(ssid);
+    Serial.print("EEPROM_ssid_Length_2 =");
+    Serial.println(EEPROM.read(0));
+
+
+    for (int i = 0; i <= EEPROM.read(50); i++)
+    {
+      password[i] = EEPROM.read(51 + i);
+    }
+    Serial.print("EEPROM_password_2 =");
+    Serial.println(password);
+    Serial.print("EEPROM_password_Length_2 =");
+    Serial.println(EEPROM.read(50));
+  }
+
+
+  // We start by connecting to a WiFi network
+  while (!connect_wifi())
+  {
+    delay(1);
+    if(Serial.available())
+    {
+      delay(100);
+      if(Serial.find("RESET_ESP"));
+      EEPROM.write(200,0);
+      delay(10);
+      EEPROM.commit();
+      ESP.reset();
+    }
+  }
+  status_LEDs(1);
+
+
+
+  while (!connect_to_server());
+  status_LEDs(2);
+
+
+  while (!connect_socket());
+
+  // Serial.println("SOCKET CONNECTED NOW");
+  //client.send("connection", "message", "Connected !!!!");
+
+  delay(100);
+  monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+  add_hub();
+  status_LEDs(3);
+
+  client.monitor();
+
+  Serial.println(ESP.getResetReason());
+
+}
+
+void loop()
+{
+
+  //client.send("wifi", "message", "success");
+  delay(10);
+
+  if (WiFi.status() != WL_CONNECTED) // IF WiFi disconnects, Reconnect WiFi
+  {
+    status_LEDs(0);
+    while (!connect_wifi());
+    status_LEDs(1);
+
+
+    while (!connect_to_server());
+    status_LEDs(2);
+
+
+    while (!connect_socket());
+
+    // Serial.println("SOCKET CONNECTED NOW");
+    //client.send("connection", "message", "Connected !!!!");
+
+    delay(100);
+    monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+    add_hub();
+    status_LEDs(3);
+
+    client.monitor();
+  }
+
+
+  if (flag == 1) // IF server disconnects, Reconnect to Server
+  {
+    status_LEDs(1);
+    while (!connect_to_server());
+    status_LEDs(2);
+
+
+    while (!connect_socket());
+    // Serial.println("SOCKET CONNECTED NOW");
+    //client.send("connection", "message", "Connected !!!!");
+
+    delay(100);
+    monitor_client();/// The server has returned message="connected". Just read it out of the buffer.
+
+    add_hub();
+    status_LEDs(3);
+    client.monitor();
+
+    flag = 0;
+  }
+
+
+  if (monitor_client())
+  {
+    process();
+  }
+
+  String Buffer = "";
+  if (Serial.available())
+  {
+    while (Serial.available())
+    {
+      Buffer += char(Serial.read());
+      delay(20);
+    }
+    //    delay(50);
+
+//    Serial.print("Buffer= ");
+//    Serial.print(Buffer);
+
+    if (Buffer.indexOf("jackhammer,") != -1)
+    {
+      String from_node = "";
+      int index = Buffer.indexOf("jackhammer,");
+
+      from_node = Buffer.substring(index + 11);
+
+
+      //        //      while (Serial.available())
+      //        //      {
+      //        //        from_node += (char(Serial.read()));
+      //        //        delay(10);
+      //        //      }
+      Serial.print("send_to_server=");
+      Serial.println(from_node);
+      //      while (Serial.available())
+      //        Serial.read();
+      send_to_server(from_node);
+    }
+    else if (Buffer.indexOf("RESET_ESP") != -1)
+    {
+      if (EEPROM.read(200) == 1)
+      {
+        EEPROM.write(200, 0);
+        delay(100);
+        EEPROM.commit();
+        delay(100);
+        Serial.print("EEPROM_RST= ");
+        Serial.print(EEPROM.read(200));
+        delay(500);
+        ESP.reset();
+      }
+    }
+  }
+
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillis >= interval)
+  {
+    previousMillis = currentMillis;
+    client.heartbeat(3); //Send Pong
+    client.monitor();
+  }
+}
