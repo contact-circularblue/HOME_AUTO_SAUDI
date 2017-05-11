@@ -86,7 +86,7 @@ module.exports = function Hub(uniqueID,socket){
 	this.printNodes = function(){
 		console.log("length : " + this.Nodes.length);
 		for (var i = 0; i < this.Nodes.length ; i++) {
-			console.log(this.Nodes[i].name());
+			console.log(this.Nodes[i].id());
 		}
 	}; 
 
@@ -119,15 +119,26 @@ module.exports = function Hub(uniqueID,socket){
 	};
 
 	this.getNode =function(nodeId){
+
+		console.log("GET NODE" );
+		console.log("GET NODE : "  + nodeId);
+		console.log("GET NODE : NODES COUNT "  + this.Nodes.length );
+
+		this.printNodes();
+
+		console.log("GET NODE : ENTERING THE LOOP");
 		for (var i = 0; i < this.Nodes.length; i++) {
+
+			console.log("GET NODE : ID "  + this.Nodes[i].id());
+		
 			if(this.Nodes[i].id() == nodeId){
 				console.log("NODE FOUND");
 				return this.Nodes[i];
 			}else{
-				console.log("NODE NOT FOUND");
-				return null;
+			//	return null;
 			}
 		}
+		console.log("NODE NOT FOUND");
 		return null;
 	};
 	this.checkAlive = function(data){
