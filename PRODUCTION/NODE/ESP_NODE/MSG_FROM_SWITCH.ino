@@ -15,9 +15,9 @@ void Msg_from_switch()
     {
       data_from_switch += char(Serial.read());
       // Serial.println(data_from_switch);
-      delay(10);
+      delay(20);
     }
-    //Serial.println("data from ARDUINO: " + data_from_switch);
+//    Serial.println("data from ARDUINO: " + data_from_switch);
     //
     //    Serial.println(data_from_switch.charAt(0));
 

@@ -6,8 +6,8 @@
 
 
 //CHANGE THESE FOR EACH NODE
-String Node_Name = "4KNgcC2T1E";
-char ReplyBuffer[] = "hub:4KNgcC2T1E,ack";
+String Node_Name = "4WQt8Wn0y8";
+char ReplyBuffer[] = "hub:4WQt8Wn0y8,ack";
 //----------------------------------------
 
 

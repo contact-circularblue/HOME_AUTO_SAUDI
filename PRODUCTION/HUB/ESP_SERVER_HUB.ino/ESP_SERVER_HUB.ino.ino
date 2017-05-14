@@ -6,7 +6,7 @@
 #include <EEPROM.h>
 
 /****HUB ID****/
-String hub_id = "8Xvdmm6ogt";
+String hub_id = "63iGzT9iDQ";
 
 /*DEFAULT WIFI ID PASSWORD*/
 

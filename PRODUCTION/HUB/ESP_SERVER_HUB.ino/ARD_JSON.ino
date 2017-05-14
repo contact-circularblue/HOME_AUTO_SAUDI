@@ -276,35 +276,38 @@ void ARD_JSON(String a, char* topic)
             ID += char(Serial.read());
             delay(10);
           }
-          Serial.println("ID_STRING= " + ID);
+//          Serial.println("ID_STRING= " + ID);
         }
       }
 
       delay(1000);
 
-      Serial.println("1");
+//      Serial.println("1");
 
       for (int i = 0; i < 50; i++)
       {
         if (ID.indexOf("ID:") != -1)
         {
 
-          Serial.println("2");
+//          Serial.println("2");
 
           String node_ID = ID.substring(ID.indexOf("ID:") + 3);
           // json_add_node = "";
 
           //String node_Id = "4234567890";
 
-          Serial.println("3");
+//          Serial.println("3");
 
           JsonObject& root_add_node = jsonBuffer.createObject();
 
-          // String node_ID="4234567890";
+//          node_ID="4234567890";
           root_add_node["nodeId"] = node_ID;
           root_add_node["type"] = String(node_ID[0]);
           String json_root_add_node = "";
           root_add_node.printTo(json_root_add_node);
+          
+          delay(1000);
+          
           client.publish(topic, stringToCharArray(json_root_add_node));
 
           break;

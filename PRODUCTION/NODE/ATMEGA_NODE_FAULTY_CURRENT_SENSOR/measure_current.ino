@@ -63,7 +63,24 @@ float measure_current()
   }
   if (calibration == 1)
   {
-    //
+    int devices_on = 0;
+    for (int i = 0; i < 4; i++)
+    {
+      if (EEPROM.read(1000 + i) == 1)
+      {
+        devices_on++;
+      }
+    }
+    //    Serial.print("devices_on=");
+    //    Serial.println(devices_on);
+    if (devices_on > 1)
+    {
+      power = ((power * (40 - power) * ((devices_on) * 10)) / 60);
+      //      Serial.print("power=");
+      //    Serial.println(power);
+      if (power < 0)
+        power = -power;
+    }
     return power;
   }
   else

@@ -31,7 +31,7 @@ void send_to_server(String in)
       {
         if (REQ == "0")
         {
-          if (dId.toInt() <= 5)
+          if (dId.toInt() <= 16)
           {
             root2["nId"] = nId;
             root2["dId"] = dId;
