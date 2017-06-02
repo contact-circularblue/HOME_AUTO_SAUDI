@@ -1,16 +1,25 @@
 var mongoose = require('mongoose');
 var async = require('async');
-
 var Node = require('./Node');
+var domain = require('domain').create();
 
-mongoose.connect('mongodb://localhost/nodes',function(err){
-  
-	  if(err){
-	    console.log(err);
-	  }else{ 
-	    console.log('connected to mongodb!');
-	  }
+domain.on('error', function(er) {
+    console.log('Oh no, something wrong with DB');
 });
+
+domain.run(function() {
+	
+	mongoose.connect('mongodb://localhost/nodes',function(err){
+	  
+		  if(err){
+		    console.log(err);
+		  }else{ 
+		    console.log('connected to mongodb!');
+		  }
+	});
+
+});
+
 
 var node_schema = mongoose.Schema({
   Hubid: String,
