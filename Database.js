@@ -131,8 +131,8 @@ module.exports = {
 		var Hubid = data.hubid;
 		var deviceId = data.deviceId;
 		var state = data.state;
-
-		mongoose.model('nodes').update({"Hubid":Hubid,"devices.id":deviceId},{$set:{"devices.$.state":state}},{multi:true},function(err,docs){
+		var nodeId = data.nodeId;
+		mongoose.model('nodes').update({"Hubid":Hubid,"Nodeid":nodeId,"devices.id":deviceId},{$set:{"devices.$.state":state}},{multi:true},function(err,docs){
 			console.log(err);
 			console.log(docs);
 		});

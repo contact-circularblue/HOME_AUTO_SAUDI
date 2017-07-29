@@ -67,7 +67,14 @@ server.on('clientConnected', function(client) {
                 node.addDevice(new Device(irDevices[i].id,"IR"));
             }
         }
+        console.log("HUB : " );
+	for(var i=0;i<hub.Nodes.length;i++){
+                 console.log("NODE ID : " + hub.Nodes[i].id());
+        	console.log(hub.Nodes[i].Devices);
+	}
     });
+     
+  
 
 });
 
@@ -169,7 +176,7 @@ server.on('published', function(packet, client) {
                         var state_ = (deviceState == 'true');
 
                         console.log("Device state" + state_);
-                        Database.setDeviceState({hubid:Hubid_,deviceId:deviceId_,state:state_});
+                        Database.setDeviceState({hubid:Hubid_,nodeId:nodeId,deviceId:deviceId_,state:state_});
 
                     }
                     hub.broadCastToMobieDevices(response_obj,Events.Emit.Node_change);
@@ -805,7 +812,9 @@ socket.on('pong',function(data){
               // console.log("current State " + node.Devices[j].currentState());
               devices.push({'id':node.Devices[j].id(),'state':node.Devices[j].currentState()});
           }
-          // console.log("Node devices : ")
+           
+           console.log("Node devices : ")
+           console.log(devices);
           // console.log(node.getDevices());
 
           socket.emit(Events.Emit.Node_devices,devices);
